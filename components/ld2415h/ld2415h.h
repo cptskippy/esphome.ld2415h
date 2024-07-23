@@ -2,7 +2,6 @@
 
 #include "esphome/core/component.h"
 #include "esphome/components/uart/uart.h"
-#include "esphome/components/binary_sensor/binary_sensor.h"
 #include "esphome/components/sensor/sensor.h"
 #ifdef USE_NUMBER
 #include "esphome/components/number/number.h"
@@ -34,7 +33,6 @@ enum UnitOfMeasure : uint8_t { KPH = 0x00, MPH = 0x01, MPS = 0x02 };
 class LD2415HListener {
  public:
   virtual void on_speed(uint8_t speed){};
-  virtual void on_approach(bool approaching){};
 };
 
 class LD2415HComponent : public Component, public uart::UARTDevice {
@@ -87,7 +85,6 @@ class LD2415HComponent : public Component, public uart::UARTDevice {
 
  protected:
   sensor::Sensor *speed_sensor_{nullptr};
-  binary_sensor::BinarySensor *approaching_binary_sensor_{nullptr};
 
   // Configuration
   uint8_t min_speed_threshold_ = 0;
