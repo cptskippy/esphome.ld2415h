@@ -1,6 +1,5 @@
 #include "ld2415h.h"
 #include "esphome/core/log.h"
-#include "esphome/core/application.h"
 
 namespace esphome {
 namespace ld2415h {
@@ -26,10 +25,8 @@ LD2415HComponent::LD2415HComponent()
 void LD2415HComponent::setup() {
   // This triggers current sensor configurations to be dumped
   this->update_config_ = true;
-  App.register_api_component(this);
-}
 
-void LD2415HComponent::on_client_connected() {
+/*
 #ifdef USE_NUMBER
   this->min_speed_threshold_number_->publish_state(this->min_speed_threshold_);
   this->compensation_angle_number_->publish_state(this->compensation_angle_);
@@ -42,6 +39,7 @@ void LD2415HComponent::on_client_connected() {
   this->sample_rate_selector_->publish_state(this->i_to_s_(SAMPLE_RATE_STR_TO_INT, this->sample_rate_));
   this->tracking_mode_selector_->publish_state(this->i_to_s_(TRACKING_MODE_STR_TO_INT, this->tracking_mode_));
 #endif
+*/
 }
 
 void LD2415HComponent::dump_config() {
@@ -337,33 +335,43 @@ void LD2415HComponent::parse_config_param_(char *key, char *value) {
 
   uint8_t v = std::stoi(value, nullptr, 16);
 
+
+
   switch (key[1]) {
     case '1':
       this->min_speed_threshold_ = v;
+      this->min_speed_threshold_number_->publish_state(this->min_speed_threshold_);
       break;
     case '2':
       this->compensation_angle_ = std::stoi(value, nullptr, 16);
+      this->compensation_angle_number_->publish_state(this->compensation_angle_);
       break;
     case '3':
       this->sensitivity_ = std::stoi(value, nullptr, 16);
+      this->sensitivity_number_->publish_state(this->sensitivity_);
       break;
     case '4':
       this->tracking_mode_ = this->i_to_tracking_mode_(v);
+      this->tracking_mode_selector_->publish_state(this->i_to_s_(TRACKING_MODE_STR_TO_INT, this->tracking_mode_));
       break;
     case '5':
       this->sample_rate_ = v;
+      this->sample_rate_selector_->publish_state(this->i_to_s_(SAMPLE_RATE_STR_TO_INT, this->sample_rate_));
       break;
     case '6':
       this->unit_of_measure_ = this->i_to_unit_of_measure_(v);
       break;
     case '7':
       this->vibration_correction_ = v;
+      this->vibration_correction_number_->publish_state(this->vibration_correction_);
       break;
     case '8':
       this->relay_trigger_duration_ = v;
+      this->relay_trigger_duration_number_->publish_state(this->relay_trigger_duration_);
       break;
     case '9':
       this->relay_trigger_speed_ = v;
+      this->relay_trigger_speed_number_->publish_state(this->relay_trigger_speed_);
       break;
     case '0':
       this->negotiation_mode_ = this->i_to_negotiation_mode_(v);

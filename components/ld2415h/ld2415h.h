@@ -3,7 +3,6 @@
 #include "esphome/core/component.h"
 #include "esphome/components/uart/uart.h"
 #include "esphome/components/sensor/sensor.h"
-#include "esphome/components/api/api.h"
 #ifdef USE_NUMBER
 #include "esphome/components/number/number.h"
 #endif
@@ -43,7 +42,6 @@ class LD2415HComponent : public Component, public api::Component, public uart::U
   void setup() override;
   void dump_config() override;
   void loop() override;
-  void on_client_connected() override;
 
 #ifdef USE_NUMBER
   void set_min_speed_threshold_number(number::Number *number) { this->min_speed_threshold_number_ = number; };
