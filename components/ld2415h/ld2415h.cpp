@@ -1,5 +1,6 @@
 #include "ld2415h.h"
 #include "esphome/core/log.h"
+#include "esphome/core/application.h"
 
 namespace esphome {
 namespace ld2415h {
@@ -25,7 +26,7 @@ LD2415HComponent::LD2415HComponent()
 void LD2415HComponent::setup() {
   // This triggers current sensor configurations to be dumped
   this->update_config_ = true;
-
+  App.register_api_component(this);
 }
 
 void LD2415HComponent::on_client_connected() {
