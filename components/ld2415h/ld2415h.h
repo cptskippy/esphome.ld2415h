@@ -35,13 +35,14 @@ class LD2415HListener {
   virtual void on_speed(uint8_t speed){};
 };
 
-class LD2415HComponent : public Component, public uart::UARTDevice {
+class LD2415HComponent : public Component, public api::Component, public uart::UARTDevice {
  public:
   // Constructor declaration
   LD2415HComponent();
   void setup() override;
   void dump_config() override;
   void loop() override;
+  void on_client_connected() override;
 
 #ifdef USE_NUMBER
   void set_min_speed_threshold_number(number::Number *number) { this->min_speed_threshold_number_ = number; };
@@ -99,11 +100,11 @@ class LD2415HComponent : public Component, public uart::UARTDevice {
   NegotiationMode negotiation_mode_ = NegotiationMode::CUSTOM_AGREEMENT;
 
   // State
-  uint8_t cmd_speed_angle_sense_[8];
-  uint8_t cmd_mode_rate_uom_[8];
-  uint8_t cmd_anti_vib_comp_[8];
-  uint8_t cmd_relay_duration_speed_[8];
-  uint8_t cmd_config_[13];
+  uint8_t cmd_set_speed_angle_sense_[8];
+  uint8_t cmd_set_mode_rate_uom_[8];
+  uint8_t cmd_set_anti_vib_comp_[8];
+  uint8_t cmd_set_relay_duration_speed_[8];
+  uint8_t cmd_get_config_[13];
 
   bool update_speed_angle_sense_ = false;
   bool update_mode_rate_uom_ = false;
