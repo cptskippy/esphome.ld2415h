@@ -7,39 +7,16 @@ namespace ld2415h {
 static const char *const TAG = "ld2415h";
 
 /*
-static const uint8_t LD2415H_CMD_SET_SPEED_ANGLE_SENSE[] = {0x43, 0x46, 0x01, 0x01, 0x00, 0x05, 0x0d, 0x0a};
-static const uint8_t LD2415H_CMD_SET_MODE_RATE_UOM[] = {0x43, 0x46, 0x02, 0x01, 0x01, 0x00, 0x0d, 0x0a};
-static const uint8_t LD2415H_CMD_SET_ANTI_VIB_COMP[] = {0x43, 0x46, 0x03, 0x05, 0x00, 0x00, 0x0d, 0x0a};
-static const uint8_t LD2415H_CMD_SET_RELAY_DURATION_SPEED[] = {0x43, 0x46, 0x04, 0x03, 0x01, 0x00, 0x0d, 0x0a};
-static const uint8_t LD2415H_CMD_GET_CONFIG[] = {0x43, 0x46, 0x07, 0x00, 0x00, 0x00, 0x00,
-                                                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-*/
-
 LD2415HComponent::LD2415HComponent()
     : cmd_set_speed_angle_sense_{0x43, 0x46, 0x01, 0x01, 0x00, 0x05, 0x0d, 0x0a},
       cmd_set_mode_rate_uom_{0x43, 0x46, 0x02, 0x01, 0x01, 0x00, 0x0d, 0x0a},
       cmd_set_anti_vib_comp_{0x43, 0x46, 0x03, 0x05, 0x00, 0x00, 0x0d, 0x0a},
       cmd_set_relay_duration_speed_{0x43, 0x46, 0x04, 0x03, 0x01, 0x00, 0x0d, 0x0a},
       cmd_get_config_{0x43, 0x46, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00} {}
-
+*/
 void LD2415HComponent::setup() {
   // This triggers current sensor configurations to be dumped
   this->update_config_ = true;
-
-/*
-#ifdef USE_NUMBER
-  this->min_speed_threshold_number_->publish_state(this->min_speed_threshold_);
-  this->compensation_angle_number_->publish_state(this->compensation_angle_);
-  this->sensitivity_number_->publish_state(this->sensitivity_);
-  this->vibration_correction_number_->publish_state(this->vibration_correction_);
-  this->relay_trigger_duration_number_->publish_state(this->relay_trigger_duration_);
-  this->relay_trigger_speed_number_->publish_state(this->relay_trigger_speed_);
-#endif
-#ifdef USE_SELECT
-  this->sample_rate_selector_->publish_state(this->i_to_s_(SAMPLE_RATE_STR_TO_INT, this->sample_rate_));
-  this->tracking_mode_selector_->publish_state(this->i_to_s_(TRACKING_MODE_STR_TO_INT, this->tracking_mode_));
-#endif
-*/
 }
 
 void LD2415HComponent::dump_config() {
