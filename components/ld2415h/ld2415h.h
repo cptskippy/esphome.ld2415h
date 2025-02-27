@@ -3,7 +3,7 @@
 #include "esphome/core/component.h"
 #include "esphome/components/uart/uart.h"
 #include "esphome/components/sensor/sensor.h"
-#include "esphome/components/api/api_component.h"
+#include "esphome/components/api/api.h"
 #ifdef USE_NUMBER
 #include "esphome/components/number/number.h"
 #endif
