@@ -35,7 +35,7 @@ class LD2415HListener {
   virtual void on_speed(uint8_t speed){};
 };
 
-class LD2415HComponent : public Component, public api::Component, public uart::UARTDevice {
+class LD2415HComponent : public Component, public uart::UARTDevice {
  public:
   // Constructor declaration
   LD2415HComponent();
