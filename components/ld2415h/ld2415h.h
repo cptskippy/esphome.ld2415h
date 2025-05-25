@@ -105,10 +105,10 @@ class LD2415HComponent : public Component, public uart::UARTDevice {
   uint8_t cmd_set_relay_duration_speed_[8] = {0x43, 0x46, 0x04, 0x03, 0x01, 0x00, 0x0d, 0x0a};
   uint8_t cmd_get_config_[13] = {0x43, 0x46, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-  bool update_speed_angle_sense_ = false;
-  bool update_mode_rate_uom_ = false;
-  bool update_anti_vib_comp_ = false;
-  bool update_relay_duration_speed_ = false;
+  bool update_speed_angle_sense_ = true;
+  bool update_mode_rate_uom_ = true;
+  bool update_anti_vib_comp_ = true;
+  bool update_relay_duration_speed_ = true;
   bool update_config_ = false;
 
   char firmware_[20] = "";
