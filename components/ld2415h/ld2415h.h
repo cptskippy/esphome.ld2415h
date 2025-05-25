@@ -87,15 +87,15 @@ class LD2415HComponent : public Component, public uart::UARTDevice {
   sensor::Sensor *speed_sensor_{nullptr};
 
   // Configuration
-  uint8_t min_speed_threshold_ = 0;
+  uint8_t min_speed_threshold_ = 1;
   uint8_t compensation_angle_ = 0;
-  uint8_t sensitivity_ = 0;
+  uint8_t sensitivity_ = 10;
   TrackingMode tracking_mode_ = TrackingMode::APPROACHING_AND_RETREATING;
-  uint8_t sample_rate_ = 0;
+  uint8_t sample_rate_ = 1;
   UnitOfMeasure unit_of_measure_ = UnitOfMeasure::KPH;
-  uint8_t vibration_correction_ = 0;
+  uint8_t vibration_correction_ = 18;
   uint8_t relay_trigger_duration_ = 0;
-  uint8_t relay_trigger_speed_ = 0;
+  uint8_t relay_trigger_speed_ = 1;
   NegotiationMode negotiation_mode_ = NegotiationMode::CUSTOM_AGREEMENT;
 
   // State
