@@ -32,7 +32,7 @@ void LD2415HComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "  Relay Trigger Duration: %u", this->relay_trigger_duration_);
   ESP_LOGCONFIG(TAG, "  Relay Trigger Speed: %u KPH", this->relay_trigger_speed_);
   ESP_LOGCONFIG(TAG, "  Negotiation Mode: %s", negotiation_mode_to_s_(this->negotiation_mode_));
-  
+
   this->update_config_ = true;
 }
 
@@ -53,7 +53,7 @@ void LD2415HComponent::loop() {
     this->issue_command_(this->cmd_set_speed_angle_sense_, sizeof(this->cmd_set_speed_angle_sense_));
     this->update_speed_angle_sense_ = false;
 
-    this->min_speed_threshold__number_->publish_state(this->min_speed_threshold_);
+    this->min_speed_threshold_number_->publish_state(this->min_speed_threshold_);
     this->compensation_angle_number_->publish_state(this->compensation_angle_);
     this->sensitivity_number_->publish_state(this->sensitivity_);
     return;
