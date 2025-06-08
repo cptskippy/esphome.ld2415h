@@ -24,9 +24,9 @@ static const std::map<std::string, uint8_t> SAMPLE_RATE_STR_TO_INT{
 enum TrackingMode : uint8_t { APPROACHING_AND_RETREATING = 0x00, APPROACHING = 0x01, RETREATING = 0x02 };
 
 static const std::map<std::string, uint8_t> TRACKING_MODE_STR_TO_INT{
-    {"Approaching and Restreating", APPROACHING_AND_RETREATING},
+    {"Approaching and Retreating", APPROACHING_AND_RETREATING},
     {"Approaching", APPROACHING},
-    {"Restreating", RETREATING}};
+    {"Retreating", RETREATING}};
 
 enum UnitOfMeasure : uint8_t { KPH = 0x00, MPH = 0x01, MPS = 0x02 };
 
