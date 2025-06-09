@@ -57,6 +57,8 @@ class LD2415HComponent : public Component, public uart::UARTDevice {
 #endif
   float get_setup_priority() const override { return setup_priority::HARDWARE; }
   void register_listener(LD2415HListener *listener) { this->listeners_.push_back(listener); }
+  // void set_speed_sensor(sensor::Sensor *sensor) { this->speed_sensor_ = sensor; };
+  // void set_velocity_sensor(sensor::Sensor *sensor) { this->velocity_sensor_ = sensor; };
 
   void set_min_speed_threshold(uint8_t speed);
   void set_compensation_angle(uint8_t angle);
