@@ -276,6 +276,12 @@ void LD2415HComponent::parse_speed_() {
 
     ESP_LOGV(TAG, "Speed updated: %f KPH", this->speed_);
 
+    for (auto &listener : this->listeners_) {
+      listener->on_speed(this->speed_);
+      listener->on_velocity(this->velocity_);
+      // listener->on_approaching(this->approaching_);
+    }
+
     if (this->speed_sensor_ != nullptr)
       this->speed_sensor_->publish_state(this->speed_);
 
