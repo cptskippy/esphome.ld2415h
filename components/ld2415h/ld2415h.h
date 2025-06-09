@@ -15,28 +15,21 @@ namespace esphome {
 namespace ld2415h {
 
 enum NegotiationMode : uint8_t { CUSTOM_AGREEMENT = 0x01, STANDARD_PROTOCOL = 0x02 };
-
 enum SampleRateStructure : uint8_t { SAMPLE_RATE_22FPS = 0x00, SAMPLE_RATE_11FPS = 0x01, SAMPLE_RATE_6FPS = 0x02 };
+enum TrackingMode : uint8_t { APPROACHING_AND_RETREATING = 0x00, APPROACHING = 0x01, RETREATING = 0x02 };
+enum UnitOfMeasure : uint8_t { KPH = 0x00, MPH = 0x01, MPS = 0x02 };
 
+static const std::map<std::string, uint8_t> NEGOTIATION_MODE_STR_TO_INT{
+    {"Custom Agreement", CUSTOM_AGREEMENT}, {"Standard Protocol", STANDARD_PROTOCOL}};
 static const std::map<std::string, uint8_t> SAMPLE_RATE_STR_TO_INT{
     {"~22 fps", SAMPLE_RATE_22FPS}, {"~11 fps", SAMPLE_RATE_11FPS}, {"~6 fps", SAMPLE_RATE_6FPS}};
-
-enum TrackingMode : uint8_t { APPROACHING_AND_RETREATING = 0x00, APPROACHING = 0x01, RETREATING = 0x02 };
-
 static const std::map<std::string, uint8_t> TRACKING_MODE_STR_TO_INT{
     {"Approaching and Retreating", APPROACHING_AND_RETREATING},
     {"Approaching", APPROACHING},
     {"Retreating", RETREATING}};
+static const std::map<std::string, uint8_t> UNIT_OF_MEASURE_STR_TO_INT{
+    {"km/h", KPH}, {"mph", MPH}, {"m/s", MPS}};
 
-enum UnitOfMeasure : uint8_t { KPH = 0x00, MPH = 0x01, MPS = 0x02 };
-/*
-class LD2415HListener {
- public:
-  virtual void on_speed(double speed){};
-  virtual void on_velocity(double velocity){};
-  virtual void on_approach(bool approaching){};
-};
-*/
 class LD2415HComponent : public Component, public uart::UARTDevice {
  public:
   // Constructor declaration
@@ -136,12 +129,8 @@ class LD2415HComponent : public Component, public uart::UARTDevice {
   TrackingMode i_to_tracking_mode_(uint8_t value);
   UnitOfMeasure i_to_unit_of_measure_(uint8_t value);
   NegotiationMode i_to_negotiation_mode_(uint8_t value);
-  const char *tracking_mode_to_s_(TrackingMode value);
-  const char *unit_of_measure_to_s_(UnitOfMeasure value);
-  const char *negotiation_mode_to_s_(NegotiationMode value);
   const char *i_to_s_(const std::map<std::string, uint8_t> &map, uint8_t i);
 
-  //std::vector<LD2415HListener *> listeners_{};
 };
 
 }  // namespace ld2415h
