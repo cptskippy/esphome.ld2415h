@@ -285,19 +285,25 @@ void LD2415HComponent::parse_speed_() {
 
   if (p != nullptr) {
     ++p;
-    this->approaching_ = (*p == '+');
+    //this->approaching_ = (*p == '+');
+    this->velocity_ = strtod(p, nullptr);
     ++p;
     this->speed_ = strtod(p, nullptr);
+    
 
     ESP_LOGV(TAG, "Speed updated: %f KPH", this->speed_);
 
-    for (auto &listener : this->listeners_) {
+/*    for (auto &listener : this->listeners_) {
       listener->on_speed(this->speed_);
-      // listener->on_approaching(this->approaching_);
+      listener->on_velocity(this->velocity_);
+      listener->on_approach(this->approaching_);
     }
-
+*/
     if (this->speed_sensor_ != nullptr)
       this->speed_sensor_->publish_state(this->speed_);
+
+    if (this->velocity_sensor_ != nullptr)
+      this->velocity_sensor_->publish_state(this->velocity_);
 
   } else {
     ESP_LOGE(TAG, "Firmware value invalid.");

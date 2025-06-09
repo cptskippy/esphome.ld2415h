@@ -29,12 +29,14 @@ static const std::map<std::string, uint8_t> TRACKING_MODE_STR_TO_INT{
     {"Retreating", RETREATING}};
 
 enum UnitOfMeasure : uint8_t { KPH = 0x00, MPH = 0x01, MPS = 0x02 };
-
+/*
 class LD2415HListener {
  public:
-  virtual void on_speed(uint8_t speed){};
+  virtual void on_speed(double speed){};
+  virtual void on_velocity(double velocity){};
+  virtual void on_approach(bool approaching){};
 };
-
+*/
 class LD2415HComponent : public Component, public uart::UARTDevice {
  public:
   // Constructor declaration
@@ -56,7 +58,9 @@ class LD2415HComponent : public Component, public uart::UARTDevice {
   void set_tracking_mode_select(select::Select *selector) { this->tracking_mode_selector_ = selector; };
 #endif
   float get_setup_priority() const override { return setup_priority::HARDWARE; }
-  void register_listener(LD2415HListener *listener) { this->listeners_.push_back(listener); }
+  //void register_listener(LD2415HListener *listener) { this->listeners_.push_back(listener); }
+  void set_speed_sensor(sensor::Sensor *sensor) { this->speed_sensor_ = sensor; };
+  void set_velocity_sensor(sensor::Sensor *sensor) { this->velocity_sensor_ = sensor; };
 
   void set_min_speed_threshold(uint8_t speed);
   void set_compensation_angle(uint8_t angle);
@@ -85,6 +89,7 @@ class LD2415HComponent : public Component, public uart::UARTDevice {
 
  protected:
   sensor::Sensor *speed_sensor_{nullptr};
+  sensor::Sensor *velocity_sensor_{nullptr};
 
   // Configuration
   uint8_t min_speed_threshold_ = 1;
@@ -112,8 +117,8 @@ class LD2415HComponent : public Component, public uart::UARTDevice {
   bool update_config_ = false;
 
   char firmware_[20] = "";
-  float speed_ = 0;
-  bool approaching_ = true;
+  double speed_ = 0;
+  double velocity_ = 0;
   char response_buffer_[64];
   uint8_t response_buffer_index_ = 0;
 
@@ -136,7 +141,7 @@ class LD2415HComponent : public Component, public uart::UARTDevice {
   const char *negotiation_mode_to_s_(NegotiationMode value);
   const char *i_to_s_(const std::map<std::string, uint8_t> &map, uint8_t i);
 
-  std::vector<LD2415HListener *> listeners_{};
+  //std::vector<LD2415HListener *> listeners_{};
 };
 
 }  // namespace ld2415h
