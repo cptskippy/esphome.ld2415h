@@ -242,7 +242,7 @@ void LD2415HComponent::parse_config_() {
   }
 
   ESP_LOGD(TAG, "Configuration received:");
-  dump_config()
+  dump_config();
 }
 
 void LD2415HComponent::parse_firmware_() {
