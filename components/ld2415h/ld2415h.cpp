@@ -7,13 +7,7 @@ namespace ld2415h {
 static const char *const TAG = "ld2415h";
 
 LD2415HComponent::LD2415HComponent() {}
-/*
-    : cmd_set_speed_angle_sense_{0x43, 0x46, 0x01, 0x01, 0x00, 0x05, 0x0d, 0x0a},
-      cmd_set_mode_rate_uom_{0x43, 0x46, 0x02, 0x01, 0x01, 0x00, 0x0d, 0x0a},
-      cmd_set_anti_vib_comp_{0x43, 0x46, 0x03, 0x05, 0x00, 0x00, 0x0d, 0x0a},
-      cmd_set_relay_duration_speed_{0x43, 0x46, 0x04, 0x03, 0x01, 0x00, 0x0d, 0x0a},
-      cmd_get_config_{0x43, 0x46, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
-*/
+
 void LD2415HComponent::setup() {
   // This triggers current sensor configurations to be dumped
   this->update_config_ = true;
@@ -25,13 +19,13 @@ void LD2415HComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "  Minimum Speed Threshold: %u KPH", this->min_speed_threshold_);
   ESP_LOGCONFIG(TAG, "  Compensation Angle: %u", this->compensation_angle_);
   ESP_LOGCONFIG(TAG, "  Sensitivity: %u", this->sensitivity_);
-  ESP_LOGCONFIG(TAG, "  Tracking Mode: %s", tracking_mode_to_s_(this->tracking_mode_));
-  ESP_LOGCONFIG(TAG, "  Sampling Rate: %u", this->sample_rate_);
-  ESP_LOGCONFIG(TAG, "  Unit of Measure: %s", unit_of_measure_to_s_(this->unit_of_measure_));
+  ESP_LOGCONFIG(TAG, "  Tracking Mode: %s", this->i_to_s_(TRACKING_MODE_STR_TO_INT, this->tracking_mode_));
+  ESP_LOGCONFIG(TAG, "  Sampling Rate: %s", this->i_to_s_(SAMPLE_RATE_STR_TO_INT, this->sample_rate_));
+  ESP_LOGCONFIG(TAG, "  Unit of Measure: %s", this->i_to_s_(UNIT_OF_MEASURE_STR_TO_INT, this->unit_of_measure_));
   ESP_LOGCONFIG(TAG, "  Vibration Correction: %u", this->vibration_correction_);
   ESP_LOGCONFIG(TAG, "  Relay Trigger Duration: %u", this->relay_trigger_duration_);
   ESP_LOGCONFIG(TAG, "  Relay Trigger Speed: %u KPH", this->relay_trigger_speed_);
-  ESP_LOGCONFIG(TAG, "  Negotiation Mode: %s", negotiation_mode_to_s_(this->negotiation_mode_));
+  ESP_LOGCONFIG(TAG, "  Negotiation Mode: %s", this->i_to_s_(NEGOTIATION_MODE_STR_TO_INT, this->negotiation_mode_));
 }
 
 void LD2415HComponent::loop() {
@@ -248,18 +242,7 @@ void LD2415HComponent::parse_config_() {
   }
 
   ESP_LOGD(TAG, "Configuration received:");
-  ESP_LOGCONFIG(TAG, "LD2415H:");
-  ESP_LOGCONFIG(TAG, "  Firmware: %s", this->firmware_);
-  ESP_LOGCONFIG(TAG, "  Minimum Speed Threshold: %u KPH", this->min_speed_threshold_);
-  ESP_LOGCONFIG(TAG, "  Compensation Angle: %u", this->compensation_angle_);
-  ESP_LOGCONFIG(TAG, "  Sensitivity: %u", this->sensitivity_);
-  ESP_LOGCONFIG(TAG, "  Tracking Mode: %s", tracking_mode_to_s_(this->tracking_mode_));
-  ESP_LOGCONFIG(TAG, "  Sampling Rate: %u", this->sample_rate_);
-  ESP_LOGCONFIG(TAG, "  Unit of Measure: %s", unit_of_measure_to_s_(this->unit_of_measure_));
-  ESP_LOGCONFIG(TAG, "  Vibration Correction: %u", this->vibration_correction_);
-  ESP_LOGCONFIG(TAG, "  Relay Trigger Duration: %u", this->relay_trigger_duration_);
-  ESP_LOGCONFIG(TAG, "  Relay Trigger Speed: %u KPH", this->relay_trigger_speed_);
-  ESP_LOGCONFIG(TAG, "  Negotiation Mode: %s", negotiation_mode_to_s_(this->negotiation_mode_));
+  dump_config()
 }
 
 void LD2415HComponent::parse_firmware_() {
@@ -300,7 +283,7 @@ void LD2415HComponent::parse_speed_() {
       this->speed_sensor_->publish_state(this->speed_);
 
   } else {
-    ESP_LOGE(TAG, "Firmware value invalid.");
+    ESP_LOGE(TAG, "Speed value invalid.");
   }
 }
 
@@ -398,42 +381,8 @@ NegotiationMode LD2415HComponent::i_to_negotiation_mode_(uint8_t value) {
     case NegotiationMode::STANDARD_PROTOCOL:
       return NegotiationMode::STANDARD_PROTOCOL;
     default:
-      ESP_LOGE(TAG, "Invalid UnitOfMeasure:%u", value);
+      ESP_LOGE(TAG, "Invalid NegotiationMode:%u", value);
       return NegotiationMode::CUSTOM_AGREEMENT;
-  }
-}
-
-const char *LD2415HComponent::tracking_mode_to_s_(TrackingMode value) {
-  switch (value) {
-    case TrackingMode::APPROACHING_AND_RETREATING:
-      return "APPROACHING_AND_RETREATING";
-    case TrackingMode::APPROACHING:
-      return "APPROACHING";
-    case TrackingMode::RETREATING:
-    default:
-      return "RETREATING";
-  }
-}
-
-const char *LD2415HComponent::unit_of_measure_to_s_(UnitOfMeasure value) {
-  switch (value) {
-    case UnitOfMeasure::MPS:
-      return "MPS";
-    case UnitOfMeasure::MPH:
-      return "MPH";
-    case UnitOfMeasure::KPH:
-    default:
-      return "KPH";
-  }
-}
-
-const char *LD2415HComponent::negotiation_mode_to_s_(NegotiationMode value) {
-  switch (value) {
-    case NegotiationMode::CUSTOM_AGREEMENT:
-      return "CUSTOM_AGREEMENT";
-    case NegotiationMode::STANDARD_PROTOCOL:
-    default:
-      return "STANDARD_PROTOCOL";
   }
 }
 
