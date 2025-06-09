@@ -119,7 +119,7 @@ class LD2415HComponent : public Component, public uart::UARTDevice {
   double velocity_ = 0;
   char response_buffer_[64];
   uint8_t response_buffer_index_ = 0;
-  std::vector<LD2420Listener *> listeners_{};
+  std::vector<LD2415HListener *> listeners_{};
 
   // Processing
   void issue_command_(const uint8_t cmd[], uint8_t size);
