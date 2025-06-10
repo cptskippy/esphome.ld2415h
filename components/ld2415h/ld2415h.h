@@ -39,9 +39,9 @@ static const std::map<std::string, uint8_t> UNIT_OF_MEASURE_STR_TO_INT{
 
 class LD2415HListener {
  public:
-  virtual void on_speed(uint8_t speed){};
-  // virtual void on_speed(double speed){};
-  // virtual void on_velocity(double velocity){};
+  // virtual void on_speed(uint8_t speed){};
+  virtual void on_speed(double speed){};
+  virtual void on_velocity(double velocity){};
 };
 
 class LD2415HComponent : public Component, public uart::UARTDevice {
@@ -95,7 +95,7 @@ class LD2415HComponent : public Component, public uart::UARTDevice {
 
  protected:
   sensor::Sensor *speed_sensor_{nullptr};
-  // sensor::Sensor *velocity_sensor_{nullptr};
+  sensor::Sensor *velocity_sensor_{nullptr};
 
   // Configuration
   uint8_t min_speed_threshold_ = 1;
@@ -123,9 +123,9 @@ class LD2415HComponent : public Component, public uart::UARTDevice {
   bool update_config_ = false;
 
   char firmware_[20] = "";
-  float speed_ = 0;
-  // double speed_ = 0;
-  // double velocity_ = 0;
+  // float speed_ = 0;
+  double speed_ = 0;
+  double velocity_ = 0;
   char response_buffer_[64];
   uint8_t response_buffer_index_ = 0;
 
