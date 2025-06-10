@@ -13,9 +13,9 @@ ICON_CLOCK_FAST = "mdi:clock-fast"
 
 CONF_TRACKING_MODE = "tracking_mode"
 CONF_TRACKING_MODE_SELECTS = [
-    "Approaching and Restreating",
+    "Approaching and Retreating",
     "Approaching",
-    "Restreating",
+    "Retreating",
 ]
 ICON_RADAR = "mdi:radar"
 
