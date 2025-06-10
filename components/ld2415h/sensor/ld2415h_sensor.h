@@ -21,7 +21,6 @@ class LD2415HSensor : public LD2415HListener, public Component, sensor::Sensor {
     }
   }
   void on_velocity(double  velocity) override {
-  //void on_speed(double speed) override {
     if (this->velocity_sensor_ != nullptr) {
       if (this->velocity_sensor_->get_state() != velocity) {
         this->velocity_sensor_->publish_state(velocity);
@@ -31,6 +30,7 @@ class LD2415HSensor : public LD2415HListener, public Component, sensor::Sensor {
 
  protected:
   sensor::Sensor *speed_sensor_{nullptr};
+  sensor::Sensor *velocity_sensor_{nullptr};
 };
 
 }  // namespace ld2415h
