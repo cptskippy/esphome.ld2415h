@@ -5,7 +5,7 @@
 namespace esphome {
 namespace ld2415h {
 
-static const char *const TAG = "LD2415H.speed";
+static const char *const TAG = "LD2415H.sensor";
 
 void SpeedSensor::dump_config() {
   ESP_LOGCONFIG(TAG, "LD2415H Speed:");
