@@ -15,8 +15,11 @@ namespace esphome {
 namespace ld2415h {
 
 enum NegotiationMode : uint8_t { CUSTOM_AGREEMENT = 0x01, STANDARD_PROTOCOL = 0x02 };
+
 enum SampleRateStructure : uint8_t { SAMPLE_RATE_22FPS = 0x00, SAMPLE_RATE_11FPS = 0x01, SAMPLE_RATE_6FPS = 0x02 };
+
 enum TrackingMode : uint8_t { APPROACHING_AND_RETREATING = 0x00, APPROACHING = 0x01, RETREATING = 0x02 };
+
 enum UnitOfMeasure : uint8_t { KPH = 0x00, MPH = 0x01, MPS = 0x02 };
 
 static const std::map<std::string, uint8_t> NEGOTIATION_MODE_STR_TO_INT{
@@ -63,8 +66,6 @@ class LD2415HComponent : public Component, public uart::UARTDevice {
 
   float get_setup_priority() const override { return setup_priority::HARDWARE; }
   void register_listener(LD2415HListener *listener) { this->listeners_.push_back(listener); }
-  // void set_speed_sensor(sensor::Sensor *sensor) { this->speed_sensor_ = sensor; };
-  // void set_velocity_sensor(sensor::Sensor *sensor) { this->velocity_sensor_ = sensor; };
 
   void set_min_speed_threshold(uint8_t speed);
   void set_compensation_angle(uint8_t angle);
