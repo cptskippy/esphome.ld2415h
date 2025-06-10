@@ -304,9 +304,11 @@ void LD2415HComponent::parse_speed_() {
 
   if (p != nullptr) {
     ++p;
-    this->approaching_ = (*p == '+');
+    //this->approaching_ = (*p == '+');
+    this->velocity_ = strtod(p, nullptr);
     ++p;
     this->speed_ = strtod(p, nullptr);
+    
 
     ESP_LOGV(TAG, "Speed updated: %f KPH", this->speed_);
 
