@@ -10,7 +10,7 @@ from esphome.const import (
 )
 from .. import ld2415h_ns, LD2415HComponent, CONF_LD2415H_ID
 
-LD2415HSensor = ld2415h_ns.class_("SpeedSensor", sensor.Sensor, cg.Component)
+LD2415HSensor = ld2415h_ns.class_("LD2415HSensor", sensor.Sensor, cg.Component)
 
 ICON_SPEEDOMETER = "mdi:speedometer"
 
@@ -20,7 +20,6 @@ CONFIG_SCHEMA = cv.All(
             cv.GenerateID(): cv.declare_id(LD2415HSensor),
             cv.GenerateID(CONF_LD2415H_ID): cv.use_id(LD2415HComponent),
             cv.Optional(CONF_SPEED): sensor.sensor_schema(
-                #LD2415HSpeedSensor,
                 device_class=DEVICE_CLASS_SPEED,
                 state_class=STATE_CLASS_MEASUREMENT,
                 unit_of_measurement=UNIT_KILOMETER_PER_HOUR,
@@ -30,6 +29,7 @@ CONFIG_SCHEMA = cv.All(
         }
     ),
 )
+
 
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
