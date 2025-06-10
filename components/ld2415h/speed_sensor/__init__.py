@@ -10,14 +10,14 @@ from esphome.const import (
 )
 from .. import ld2415h_ns, LD2415HComponent, CONF_LD2415H_ID
 
-LD2415HSpeedSensor = ld2415h_ns.class_("SpeedSensor", sensor.Sensor, cg.Component)
+LD2415HSensor = ld2415h_ns.class_("LD2415HSensor", sensor.Sensor, cg.Component)
 
 ICON_SPEEDOMETER = "mdi:speedometer"
 
 CONFIG_SCHEMA = cv.All(
     cv.COMPONENT_SCHEMA.extend(
         {
-            cv.GenerateID(): cv.declare_id(LD2415HSpeedSensor),
+            cv.GenerateID(): cv.declare_id(LD2415HSensor),
             cv.GenerateID(CONF_LD2415H_ID): cv.use_id(LD2415HComponent),
             cv.Optional(CONF_SPEED): sensor.sensor_schema(
                 #LD2415HSpeedSensor,
