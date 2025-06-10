@@ -10,6 +10,7 @@ static const char *const TAG = "LD2415H.sensor";
 void LD2415HSensor::dump_config() {
   ESP_LOGCONFIG(TAG, "LD2415H Sensor:");
   LOG_SENSOR("  ", "Speed", this->speed_sensor_);
+  LOG_SENSOR("  ", "Velocity", this->velocity_sensor_);
 }
 
 }  // namespace ld2415h
