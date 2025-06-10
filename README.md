@@ -149,7 +149,7 @@ uart:
 
 sensor:
   - platform: ld2415h
-    speed:
+    speed: # This is the absolute speed of the object
       name: Speed
       filters:
         # Sensor reports on speed down to 1km/h
@@ -161,5 +161,12 @@ sensor:
         # Sensor will constantly report speed
         # at the confgiured sample rate
         # this ensures we only report changes
+        - delta: 0.1
+    velocity: # This value is signed indicating approaching or retreating
+      name: Velocity
+      filters:
+        - timeout:
+            timeout: 1s
+            value: 0
         - delta: 0.1
 ```

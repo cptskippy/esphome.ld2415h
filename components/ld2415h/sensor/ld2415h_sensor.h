@@ -13,7 +13,6 @@ class LD2415HSensor : public LD2415HListener, public Component, sensor::Sensor {
   void set_velocity_sensor(sensor::Sensor *velocity) { this->velocity_sensor_ = velocity; }
   
   void on_speed(double  speed) override {
-  //void on_speed(double speed) override {
     if (this->speed_sensor_ != nullptr) {
       if (this->speed_sensor_->get_state() != speed) {
         this->speed_sensor_->publish_state(speed);

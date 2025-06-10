@@ -299,8 +299,6 @@ void LD2415HComponent::parse_config_param_(char *key, char *value) {
 
   uint8_t v = std::stoi(value, nullptr, 16);
 
-
-
   switch (key[1]) {
     case '1':
       this->min_speed_threshold_ = v;

@@ -39,7 +39,6 @@ static const std::map<std::string, uint8_t> UNIT_OF_MEASURE_STR_TO_INT{
 
 class LD2415HListener {
  public:
-  // virtual void on_speed(uint8_t speed){};
   virtual void on_speed(double speed){};
   virtual void on_velocity(double velocity){};
 };
