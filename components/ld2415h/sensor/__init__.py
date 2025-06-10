@@ -25,7 +25,7 @@ CONFIG_SCHEMA = cv.All(
             cv.GenerateID(): cv.declare_id(LD2415HVelocitySensor),
             cv.GenerateID(CONF_LD2415H_ID): cv.use_id(LD2415HComponent),
             cv.Optional(CONF_SPEED): sensor.sensor_schema(
-                #LD2415HSpeedSensor,
+                LD2415HSpeedSensor,
                 device_class=DEVICE_CLASS_SPEED,
                 state_class=STATE_CLASS_MEASUREMENT,
                 unit_of_measurement=UNIT_KILOMETER_PER_HOUR,
@@ -33,7 +33,7 @@ CONFIG_SCHEMA = cv.All(
                 accuracy_decimals=1,
             ),
             cv.Optional(CONF_VELOCITY): sensor.sensor_schema(
-                #LD2415HVelocitySensor,
+                LD2415HVelocitySensor,
                 device_class=DEVICE_CLASS_SPEED,
                 state_class=STATE_CLASS_MEASUREMENT,
                 unit_of_measurement=UNIT_KILOMETER_PER_HOUR,
