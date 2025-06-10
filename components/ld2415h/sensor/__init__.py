@@ -25,6 +25,7 @@ speed_schema = sensor.sensor_schema(
 )
 
 velocity_schema = sensor.sensor_schema(
+    device_class=DEVICE_CLASS_SPEED,
     state_class=STATE_CLASS_MEASUREMENT,
     unit_of_measurement=UNIT_KILOMETER_PER_HOUR,
     icon=ICON_SPEEDOMETER,
