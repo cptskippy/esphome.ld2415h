@@ -19,7 +19,7 @@ class LD2415HSensor : public LD2415HListener, public Component, sensor::Sensor {
     }
   }
 
-  protected:
+ protected:
   sensor::Sensor *speed_sensor_{nullptr};
 };
 
