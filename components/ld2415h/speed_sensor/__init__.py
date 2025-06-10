@@ -10,7 +10,7 @@ from esphome.const import (
 )
 from .. import ld2415h_ns, LD2415HComponent, CONF_LD2415H_ID
 
-LD2415HSensor = ld2415h_ns.class_("LD2415HSensor", sensor.Sensor, cg.Component)
+LD2415HSensor = ld2415h_ns.class_("SpeedSensor", sensor.Sensor, cg.Component)
 
 ICON_SPEEDOMETER = "mdi:speedometer"
 
