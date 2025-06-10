@@ -21,11 +21,11 @@ CONFIG_SCHEMA = cv.All(
     cv.COMPONENT_SCHEMA.extend(
         {
 
-            #cv.GenerateID(): cv.declare_id(SpeedSensor),
-            #cv.GenerateID(): cv.declare_id(VelocitySensor),
+            cv.GenerateID(): cv.declare_id(LD2415HSpeedSensor),
+            cv.GenerateID(): cv.declare_id(LD2415HVelocitySensor),
             cv.GenerateID(CONF_LD2415H_ID): cv.use_id(LD2415HComponent),
             cv.Optional(CONF_SPEED): sensor.sensor_schema(
-                LD2415HSpeedSensor,
+                #LD2415HSpeedSensor,
                 device_class=DEVICE_CLASS_SPEED,
                 state_class=STATE_CLASS_MEASUREMENT,
                 unit_of_measurement=UNIT_KILOMETER_PER_HOUR,
@@ -33,7 +33,7 @@ CONFIG_SCHEMA = cv.All(
                 accuracy_decimals=1,
             ),
             cv.Optional(CONF_VELOCITY): sensor.sensor_schema(
-                LD2415HVelocitySensor,
+                #LD2415HVelocitySensor,
                 device_class=DEVICE_CLASS_SPEED,
                 state_class=STATE_CLASS_MEASUREMENT,
                 unit_of_measurement=UNIT_KILOMETER_PER_HOUR,
@@ -44,18 +44,30 @@ CONFIG_SCHEMA = cv.All(
     ),
 )
 
-
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
-
-    if CONF_SPEED in config:
-        sens = await sensor.new_sensor(config[CONF_SPEED])
+    if speed := config.get(CONF_SPEED):
+        sens = await sensor.new_sensor(speed)
         cg.add(var.set_speed_sensor(sens))
-
-    if CONF_VELOCITY in config:
-        sens = await sensor.new_sensor(config[CONF_VELOCITY])
+    if velocity := config.get(CONF_VELOCITY):
+        sens = await sensor.new_sensor(velocity)
         cg.add(var.set_velocity_sensor(sens))
+    ld2415h = await cg.get_variable(config[CONF_LD2415H_ID])
+    cg.add(ld2415h.register_listener(var))
+
+
+# async def to_code(config):
+#     var = cg.new_Pvariable(config[CONF_ID])
+#     await cg.register_component(var, config)
+
+#     if CONF_SPEED in config:
+#         sens = await sensor.new_sensor(config[CONF_SPEED])
+#         cg.add(var.set_speed_sensor(sens))
+
+#     if CONF_VELOCITY in config:
+#         sens = await sensor.new_sensor(config[CONF_VELOCITY])
+#         cg.add(var.set_velocity_sensor(sens))
 
     # if CONF_SPEED in config:
     #     sens = await sensor.new_sensor(config[CONF_SPEED])
@@ -74,5 +86,5 @@ async def to_code(config):
     #     sens = await sensor.new_sensor(velocity)
     #     cg.add(var.set_velocity_sensor(sens))
 
-    ld2415h_component = await cg.get_variable(config[CONF_LD2415H_ID])
-    cg.add(ld2415h_component.register_listener(var))
+    # ld2415h_component = await cg.get_variable(config[CONF_LD2415H_ID])
+    # cg.add(ld2415h_component.register_listener(var))
