@@ -2,7 +2,8 @@
 
 #include "esphome/core/component.h"
 #include "esphome/components/uart/uart.h"
-#include "esphome/components/sensor/sensor.h"
+#include "esphome/components/speed_sensor/speed_sensor.h"
+#include "esphome/components/velocity_sensor/velocity_sensor.h"
 #ifdef USE_NUMBER
 #include "esphome/components/number/number.h"
 #endif
