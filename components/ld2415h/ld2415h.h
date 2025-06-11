@@ -37,12 +37,6 @@ static const std::map<std::string, uint8_t> UNIT_OF_MEASURE_STR_TO_INT{
     {"km/h", KPH}, {"mph", MPH}, {"m/s", MPS}};
 
 
-class LD2415HListener {
- public:
-  virtual void on_speed(double speed){};
-  virtual void on_velocity(double velocity){};
-};
-
 class LD2415HComponent : public Component, public uart::UARTDevice {
  public:
   // Constructor declaration
@@ -65,7 +59,6 @@ class LD2415HComponent : public Component, public uart::UARTDevice {
 #endif
 
   float get_setup_priority() const override { return setup_priority::HARDWARE; }
-  void register_listener(LD2415HListener *listener) { this->listeners_.push_back(listener); }
 
   void set_min_speed_threshold(uint8_t speed);
   void set_compensation_angle(uint8_t angle);
@@ -142,8 +135,6 @@ class LD2415HComponent : public Component, public uart::UARTDevice {
   UnitOfMeasure i_to_unit_of_measure_(uint8_t value);
   NegotiationMode i_to_negotiation_mode_(uint8_t value);
   const char *i_to_s_(const std::map<std::string, uint8_t> &map, uint8_t i);
-
-  std::vector<LD2415HListener *> listeners_{};
 };
 
 }  // namespace ld2415h

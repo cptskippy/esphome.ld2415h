@@ -53,6 +53,3 @@ async def to_code(config):
     if velocity := config.get(CONF_VELOCITY):
         sens = await sensor.new_sensor(velocity)
         cg.add(var.set_velocity_sensor(sens))
-        
-    ld2415h = await cg.get_variable(config[CONF_LD2415H_ID])
-    cg.add(ld2415h.register_listener(var))
