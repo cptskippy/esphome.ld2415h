@@ -18,21 +18,29 @@ enum NegotiationMode : uint8_t { CUSTOM_AGREEMENT = 0x01, STANDARD_PROTOCOL = 0x
 
 enum SampleRateStructure : uint8_t { SAMPLE_RATE_22FPS = 0x00, SAMPLE_RATE_11FPS = 0x01, SAMPLE_RATE_6FPS = 0x02 };
 
-static const std::map<std::string, uint8_t> SAMPLE_RATE_STR_TO_INT{
-    {"~22 fps", SAMPLE_RATE_22FPS}, {"~11 fps", SAMPLE_RATE_11FPS}, {"~6 fps", SAMPLE_RATE_6FPS}};
-
 enum TrackingMode : uint8_t { APPROACHING_AND_RETREATING = 0x00, APPROACHING = 0x01, RETREATING = 0x02 };
-
-static const std::map<std::string, uint8_t> TRACKING_MODE_STR_TO_INT{
-    {"Approaching and Restreating", APPROACHING_AND_RETREATING},
-    {"Approaching", APPROACHING},
-    {"Restreating", RETREATING}};
 
 enum UnitOfMeasure : uint8_t { KPH = 0x00, MPH = 0x01, MPS = 0x02 };
 
+static const std::map<std::string, uint8_t> NEGOTIATION_MODE_STR_TO_INT{
+    {"Custom Agreement", CUSTOM_AGREEMENT}, {"Standard Protocol", STANDARD_PROTOCOL}};
+
+static const std::map<std::string, uint8_t> SAMPLE_RATE_STR_TO_INT{
+    {"~22 fps", SAMPLE_RATE_22FPS}, {"~11 fps", SAMPLE_RATE_11FPS}, {"~6 fps", SAMPLE_RATE_6FPS}};
+
+static const std::map<std::string, uint8_t> TRACKING_MODE_STR_TO_INT{
+    {"Approaching and Retreating", APPROACHING_AND_RETREATING},
+    {"Approaching", APPROACHING},
+    {"Retreating", RETREATING}};
+
+static const std::map<std::string, uint8_t> UNIT_OF_MEASURE_STR_TO_INT{
+    {"km/h", KPH}, {"mph", MPH}, {"m/s", MPS}};
+
+
 class LD2415HListener {
  public:
-  virtual void on_speed(uint8_t speed){};
+  virtual void on_speed(double speed){};
+  virtual void on_velocity(double velocity){};
 };
 
 class LD2415HComponent : public Component, public uart::UARTDevice {
@@ -55,6 +63,7 @@ class LD2415HComponent : public Component, public uart::UARTDevice {
   void set_sample_rate_select(select::Select *selector) { this->sample_rate_selector_ = selector; };
   void set_tracking_mode_select(select::Select *selector) { this->tracking_mode_selector_ = selector; };
 #endif
+
   float get_setup_priority() const override { return setup_priority::HARDWARE; }
   void register_listener(LD2415HListener *listener) { this->listeners_.push_back(listener); }
 
@@ -85,35 +94,36 @@ class LD2415HComponent : public Component, public uart::UARTDevice {
 
  protected:
   sensor::Sensor *speed_sensor_{nullptr};
+  sensor::Sensor *velocity_sensor_{nullptr};
 
   // Configuration
-  uint8_t min_speed_threshold_ = 0;
+  uint8_t min_speed_threshold_ = 1;
   uint8_t compensation_angle_ = 0;
-  uint8_t sensitivity_ = 0;
+  uint8_t sensitivity_ = 10;
   TrackingMode tracking_mode_ = TrackingMode::APPROACHING_AND_RETREATING;
-  uint8_t sample_rate_ = 0;
+  uint8_t sample_rate_ = 1;
   UnitOfMeasure unit_of_measure_ = UnitOfMeasure::KPH;
-  uint8_t vibration_correction_ = 0;
+  uint8_t vibration_correction_ = 18;
   uint8_t relay_trigger_duration_ = 0;
-  uint8_t relay_trigger_speed_ = 0;
+  uint8_t relay_trigger_speed_ = 1;
   NegotiationMode negotiation_mode_ = NegotiationMode::CUSTOM_AGREEMENT;
 
   // State
-  uint8_t cmd_speed_angle_sense_[8];
-  uint8_t cmd_mode_rate_uom_[8];
-  uint8_t cmd_anti_vib_comp_[8];
-  uint8_t cmd_relay_duration_speed_[8];
-  uint8_t cmd_config_[13];
+  uint8_t cmd_set_speed_angle_sense_[8] = {0x43, 0x46, 0x01, 0x01, 0x00, 0x05, 0x0d, 0x0a};
+  uint8_t cmd_set_mode_rate_uom_[8] = {0x43, 0x46, 0x02, 0x01, 0x01, 0x00, 0x0d, 0x0a};
+  uint8_t cmd_set_anti_vib_comp_[8] = {0x43, 0x46, 0x03, 0x05, 0x00, 0x00, 0x0d, 0x0a};
+  uint8_t cmd_set_relay_duration_speed_[8] = {0x43, 0x46, 0x04, 0x03, 0x01, 0x00, 0x0d, 0x0a};
+  uint8_t cmd_get_config_[13] = {0x43, 0x46, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-  bool update_speed_angle_sense_ = false;
-  bool update_mode_rate_uom_ = false;
-  bool update_anti_vib_comp_ = false;
-  bool update_relay_duration_speed_ = false;
+  bool update_speed_angle_sense_ = true;
+  bool update_mode_rate_uom_ = true;
+  bool update_anti_vib_comp_ = true;
+  bool update_relay_duration_speed_ = true;
   bool update_config_ = false;
 
   char firmware_[20] = "";
-  float speed_ = 0;
-  bool approaching_ = true;
+  double speed_ = 0;
+  double velocity_ = 0;
   char response_buffer_[64];
   uint8_t response_buffer_index_ = 0;
 
@@ -131,9 +141,6 @@ class LD2415HComponent : public Component, public uart::UARTDevice {
   TrackingMode i_to_tracking_mode_(uint8_t value);
   UnitOfMeasure i_to_unit_of_measure_(uint8_t value);
   NegotiationMode i_to_negotiation_mode_(uint8_t value);
-  const char *tracking_mode_to_s_(TrackingMode value);
-  const char *unit_of_measure_to_s_(UnitOfMeasure value);
-  const char *negotiation_mode_to_s_(NegotiationMode value);
   const char *i_to_s_(const std::map<std::string, uint8_t> &map, uint8_t i);
 
   std::vector<LD2415HListener *> listeners_{};

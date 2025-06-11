@@ -6,36 +6,11 @@ namespace ld2415h {
 
 static const char *const TAG = "ld2415h";
 
-static const uint8_t LD2415H_CMD_SET_SPEED_ANGLE_SENSE[] = {0x43, 0x46, 0x01, 0x01, 0x00, 0x05, 0x0d, 0x0a};
-static const uint8_t LD2415H_CMD_SET_MODE_RATE_UOM[] = {0x43, 0x46, 0x02, 0x01, 0x01, 0x00, 0x0d, 0x0a};
-static const uint8_t LD2415H_CMD_SET_ANTI_VIB_COMP[] = {0x43, 0x46, 0x03, 0x05, 0x00, 0x00, 0x0d, 0x0a};
-static const uint8_t LD2415H_CMD_SET_RELAY_DURATION_SPEED[] = {0x43, 0x46, 0x04, 0x03, 0x01, 0x00, 0x0d, 0x0a};
-static const uint8_t LD2415H_CMD_GET_CONFIG[] = {0x43, 0x46, 0x07, 0x00, 0x00, 0x00, 0x00,
-                                                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-
-LD2415HComponent::LD2415HComponent()
-    : cmd_speed_angle_sense_{0x43, 0x46, 0x01, 0x01, 0x00, 0x05, 0x0d, 0x0a},
-      cmd_mode_rate_uom_{0x43, 0x46, 0x02, 0x01, 0x01, 0x00, 0x0d, 0x0a},
-      cmd_anti_vib_comp_{0x43, 0x46, 0x03, 0x05, 0x00, 0x00, 0x0d, 0x0a},
-      cmd_relay_duration_speed_{0x43, 0x46, 0x04, 0x03, 0x01, 0x00, 0x0d, 0x0a},
-      cmd_config_{0x43, 0x46, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00} {}
+LD2415HComponent::LD2415HComponent() {}
 
 void LD2415HComponent::setup() {
   // This triggers current sensor configurations to be dumped
   this->update_config_ = true;
-
-#ifdef USE_NUMBER
-  this->min_speed_threshold_number_->publish_state(this->min_speed_threshold_);
-  this->compensation_angle_number_->publish_state(this->compensation_angle_);
-  this->sensitivity_number_->publish_state(this->sensitivity_);
-  this->vibration_correction_number_->publish_state(this->vibration_correction_);
-  this->relay_trigger_duration_number_->publish_state(this->relay_trigger_duration_);
-  this->relay_trigger_speed_number_->publish_state(this->relay_trigger_speed_);
-#endif
-#ifdef USE_SELECT
-  this->sample_rate_selector_->publish_state(this->i_to_s_(SAMPLE_RATE_STR_TO_INT, this->sample_rate_));
-  this->tracking_mode_selector_->publish_state(this->i_to_s_(TRACKING_MODE_STR_TO_INT, this->tracking_mode_));
-#endif
 }
 
 void LD2415HComponent::dump_config() {
@@ -44,13 +19,13 @@ void LD2415HComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "  Minimum Speed Threshold: %u KPH", this->min_speed_threshold_);
   ESP_LOGCONFIG(TAG, "  Compensation Angle: %u", this->compensation_angle_);
   ESP_LOGCONFIG(TAG, "  Sensitivity: %u", this->sensitivity_);
-  ESP_LOGCONFIG(TAG, "  Tracking Mode: %s", tracking_mode_to_s_(this->tracking_mode_));
-  ESP_LOGCONFIG(TAG, "  Sampling Rate: %u", this->sample_rate_);
-  ESP_LOGCONFIG(TAG, "  Unit of Measure: %s", unit_of_measure_to_s_(this->unit_of_measure_));
+  ESP_LOGCONFIG(TAG, "  Tracking Mode: %s", this->i_to_s_(TRACKING_MODE_STR_TO_INT, this->tracking_mode_));
+  ESP_LOGCONFIG(TAG, "  Sampling Rate: %s", this->i_to_s_(SAMPLE_RATE_STR_TO_INT, this->sample_rate_));
+  ESP_LOGCONFIG(TAG, "  Unit of Measure: %s", this->i_to_s_(UNIT_OF_MEASURE_STR_TO_INT, this->unit_of_measure_));
   ESP_LOGCONFIG(TAG, "  Vibration Correction: %u", this->vibration_correction_);
   ESP_LOGCONFIG(TAG, "  Relay Trigger Duration: %u", this->relay_trigger_duration_);
   ESP_LOGCONFIG(TAG, "  Relay Trigger Speed: %u KPH", this->relay_trigger_speed_);
-  ESP_LOGCONFIG(TAG, "  Negotiation Mode: %s", negotiation_mode_to_s_(this->negotiation_mode_));
+  ESP_LOGCONFIG(TAG, "  Negotiation Mode: %s", this->i_to_s_(NEGOTIATION_MODE_STR_TO_INT, this->negotiation_mode_));
 }
 
 void LD2415HComponent::loop() {
@@ -63,40 +38,40 @@ void LD2415HComponent::loop() {
 
   if (this->update_speed_angle_sense_) {
     ESP_LOGD(TAG, "LD2415H_CMD_SET_SPEED_ANGLE_SENSE: ");
-    this->cmd_speed_angle_sense_[3] = this->min_speed_threshold_;
-    this->cmd_speed_angle_sense_[4] = this->compensation_angle_;
-    this->cmd_speed_angle_sense_[5] = this->sensitivity_;
+    this->cmd_set_speed_angle_sense_[3] = this->min_speed_threshold_;
+    this->cmd_set_speed_angle_sense_[4] = this->compensation_angle_;
+    this->cmd_set_speed_angle_sense_[5] = this->sensitivity_;
 
-    this->issue_command_(this->cmd_speed_angle_sense_, sizeof(this->cmd_speed_angle_sense_));
+    this->issue_command_(this->cmd_set_speed_angle_sense_, sizeof(this->cmd_set_speed_angle_sense_));
     this->update_speed_angle_sense_ = false;
     return;
   }
 
   if (this->update_mode_rate_uom_) {
     ESP_LOGD(TAG, "LD2415H_CMD_SET_MODE_RATE_UOM: ");
-    this->cmd_mode_rate_uom_[3] = static_cast<uint8_t>(this->tracking_mode_);
-    this->cmd_mode_rate_uom_[4] = this->sample_rate_;
+    this->cmd_set_mode_rate_uom_[3] = static_cast<uint8_t>(this->tracking_mode_);
+    this->cmd_set_mode_rate_uom_[4] = this->sample_rate_;
 
-    this->issue_command_(this->cmd_mode_rate_uom_, sizeof(this->cmd_mode_rate_uom_));
+    this->issue_command_(this->cmd_set_mode_rate_uom_, sizeof(this->cmd_set_mode_rate_uom_));
     this->update_mode_rate_uom_ = false;
     return;
   }
 
   if (this->update_anti_vib_comp_) {
     ESP_LOGD(TAG, "LD2415H_CMD_SET_ANTI_VIB_COMP: ");
-    this->cmd_anti_vib_comp_[3] = this->vibration_correction_;
+    this->cmd_set_anti_vib_comp_[3] = this->vibration_correction_;
 
-    this->issue_command_(this->cmd_anti_vib_comp_, sizeof(this->cmd_anti_vib_comp_));
+    this->issue_command_(this->cmd_set_anti_vib_comp_, sizeof(this->cmd_set_anti_vib_comp_));
     this->update_anti_vib_comp_ = false;
     return;
   }
 
   if (this->update_relay_duration_speed_) {
     ESP_LOGD(TAG, "LD2415H_CMD_SET_RELAY_DURATION_SPEED: ");
-    this->cmd_relay_duration_speed_[3] = this->relay_trigger_duration_;
-    this->cmd_relay_duration_speed_[4] = this->relay_trigger_speed_;
+    this->cmd_set_relay_duration_speed_[3] = this->relay_trigger_duration_;
+    this->cmd_set_relay_duration_speed_[4] = this->relay_trigger_speed_;
 
-    this->issue_command_(this->cmd_relay_duration_speed_, sizeof(this->cmd_relay_duration_speed_));
+    this->issue_command_(this->cmd_set_relay_duration_speed_, sizeof(this->cmd_set_relay_duration_speed_));
     this->update_relay_duration_speed_ = false;
     return;
   }
@@ -104,7 +79,7 @@ void LD2415HComponent::loop() {
   if (this->update_config_) {
     ESP_LOGD(TAG, "LD2415H_CMD_GET_CONFIG: ");
 
-    this->issue_command_(this->cmd_config_, sizeof(this->cmd_config_));
+    this->issue_command_(this->cmd_get_config_, sizeof(this->cmd_get_config_));
     this->update_config_ = false;
     return;
   }
@@ -267,18 +242,7 @@ void LD2415HComponent::parse_config_() {
   }
 
   ESP_LOGD(TAG, "Configuration received:");
-  ESP_LOGCONFIG(TAG, "LD2415H:");
-  ESP_LOGCONFIG(TAG, "  Firmware: %s", this->firmware_);
-  ESP_LOGCONFIG(TAG, "  Minimum Speed Threshold: %u KPH", this->min_speed_threshold_);
-  ESP_LOGCONFIG(TAG, "  Compensation Angle: %u", this->compensation_angle_);
-  ESP_LOGCONFIG(TAG, "  Sensitivity: %u", this->sensitivity_);
-  ESP_LOGCONFIG(TAG, "  Tracking Mode: %s", tracking_mode_to_s_(this->tracking_mode_));
-  ESP_LOGCONFIG(TAG, "  Sampling Rate: %u", this->sample_rate_);
-  ESP_LOGCONFIG(TAG, "  Unit of Measure: %s", unit_of_measure_to_s_(this->unit_of_measure_));
-  ESP_LOGCONFIG(TAG, "  Vibration Correction: %u", this->vibration_correction_);
-  ESP_LOGCONFIG(TAG, "  Relay Trigger Duration: %u", this->relay_trigger_duration_);
-  ESP_LOGCONFIG(TAG, "  Relay Trigger Speed: %u KPH", this->relay_trigger_speed_);
-  ESP_LOGCONFIG(TAG, "  Negotiation Mode: %s", negotiation_mode_to_s_(this->negotiation_mode_));
+  dump_config();
 }
 
 void LD2415HComponent::parse_firmware_() {
@@ -304,22 +268,26 @@ void LD2415HComponent::parse_speed_() {
 
   if (p != nullptr) {
     ++p;
-    this->approaching_ = (*p == '+');
+    this->velocity_ = strtod(p, nullptr);
     ++p;
     this->speed_ = strtod(p, nullptr);
+    
 
     ESP_LOGV(TAG, "Speed updated: %f KPH", this->speed_);
 
     for (auto &listener : this->listeners_) {
       listener->on_speed(this->speed_);
-      // listener->on_approaching(this->approaching_);
+      listener->on_velocity(this->velocity_);
     }
 
     if (this->speed_sensor_ != nullptr)
       this->speed_sensor_->publish_state(this->speed_);
 
+    if (this->velocity_sensor_ != nullptr)
+      this->velocity_sensor_->publish_state(this->velocity_);
+
   } else {
-    ESP_LOGE(TAG, "Firmware value invalid.");
+    ESP_LOGE(TAG, "Speed value invalid.");
   }
 }
 
@@ -334,30 +302,38 @@ void LD2415HComponent::parse_config_param_(char *key, char *value) {
   switch (key[1]) {
     case '1':
       this->min_speed_threshold_ = v;
+      this->min_speed_threshold_number_->publish_state(this->min_speed_threshold_);
       break;
     case '2':
       this->compensation_angle_ = std::stoi(value, nullptr, 16);
+      this->compensation_angle_number_->publish_state(this->compensation_angle_);
       break;
     case '3':
       this->sensitivity_ = std::stoi(value, nullptr, 16);
+      this->sensitivity_number_->publish_state(this->sensitivity_);
       break;
     case '4':
       this->tracking_mode_ = this->i_to_tracking_mode_(v);
+      this->tracking_mode_selector_->publish_state(this->i_to_s_(TRACKING_MODE_STR_TO_INT, this->tracking_mode_));
       break;
     case '5':
       this->sample_rate_ = v;
+      this->sample_rate_selector_->publish_state(this->i_to_s_(SAMPLE_RATE_STR_TO_INT, this->sample_rate_));
       break;
     case '6':
       this->unit_of_measure_ = this->i_to_unit_of_measure_(v);
       break;
     case '7':
       this->vibration_correction_ = v;
+      this->vibration_correction_number_->publish_state(this->vibration_correction_);
       break;
     case '8':
       this->relay_trigger_duration_ = v;
+      this->relay_trigger_duration_number_->publish_state(this->relay_trigger_duration_);
       break;
     case '9':
       this->relay_trigger_speed_ = v;
+      this->relay_trigger_speed_number_->publish_state(this->relay_trigger_speed_);
       break;
     case '0':
       this->negotiation_mode_ = this->i_to_negotiation_mode_(v);
@@ -407,42 +383,8 @@ NegotiationMode LD2415HComponent::i_to_negotiation_mode_(uint8_t value) {
     case NegotiationMode::STANDARD_PROTOCOL:
       return NegotiationMode::STANDARD_PROTOCOL;
     default:
-      ESP_LOGE(TAG, "Invalid UnitOfMeasure:%u", value);
+      ESP_LOGE(TAG, "Invalid NegotiationMode:%u", value);
       return NegotiationMode::CUSTOM_AGREEMENT;
-  }
-}
-
-const char *LD2415HComponent::tracking_mode_to_s_(TrackingMode value) {
-  switch (value) {
-    case TrackingMode::APPROACHING_AND_RETREATING:
-      return "APPROACHING_AND_RETREATING";
-    case TrackingMode::APPROACHING:
-      return "APPROACHING";
-    case TrackingMode::RETREATING:
-    default:
-      return "RETREATING";
-  }
-}
-
-const char *LD2415HComponent::unit_of_measure_to_s_(UnitOfMeasure value) {
-  switch (value) {
-    case UnitOfMeasure::MPS:
-      return "MPS";
-    case UnitOfMeasure::MPH:
-      return "MPH";
-    case UnitOfMeasure::KPH:
-    default:
-      return "KPH";
-  }
-}
-
-const char *LD2415HComponent::negotiation_mode_to_s_(NegotiationMode value) {
-  switch (value) {
-    case NegotiationMode::CUSTOM_AGREEMENT:
-      return "CUSTOM_AGREEMENT";
-    case NegotiationMode::STANDARD_PROTOCOL:
-    default:
-      return "STANDARD_PROTOCOL";
   }
 }
 
