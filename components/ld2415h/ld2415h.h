@@ -3,6 +3,7 @@
 #include "esphome/core/component.h"
 #include "esphome/components/uart/uart.h"
 #include "esphome/components/sensor/sensor.h"
+#include "esphome/components/api/homeassistant_api.h"
 #ifdef USE_NUMBER
 #include "esphome/components/number/number.h"
 #endif
@@ -16,7 +17,7 @@ namespace ld2415h {
 
 enum NegotiationMode : uint8_t { CUSTOM_AGREEMENT = 0x01, STANDARD_PROTOCOL = 0x02 };
 
-enum SampleRateStructure : uint8_t { SAMPLE_RATE_22FPS = 0x00, SAMPLE_RATE_11FPS = 0x01, SAMPLE_RATE_6FPS = 0x02 };
+enum SampleRateStructure  : uint8_t { SAMPLE_RATE_22FPS = 0x00, SAMPLE_RATE_11FPS = 0x01, SAMPLE_RATE_6FPS = 0x02 };
 
 enum TrackingMode : uint8_t { APPROACHING_AND_RETREATING = 0x00, APPROACHING = 0x01, RETREATING = 0x02 };
 
@@ -43,13 +44,14 @@ class LD2415HListener {
   virtual void on_velocity(double velocity){};
 };
 
-class LD2415HComponent : public Component, public uart::UARTDevice {
+class LD2415HComponent : public Component, public uart::UARTDevice, public api::HomeassistantListener {
  public:
   // Constructor declaration
   LD2415HComponent();
   void setup() override;
   void dump_config() override;
   void loop() override;
+  void on_homeassistant_connected() override;
 
 #ifdef USE_NUMBER
   void set_min_speed_threshold_number(number::Number *number) { this->min_speed_threshold_number_ = number; };
