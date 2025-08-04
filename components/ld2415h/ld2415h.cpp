@@ -11,6 +11,37 @@ LD2415HComponent::LD2415HComponent() {}
 void LD2415HComponent::setup() {
   // This triggers current sensor configurations to be dumped
   this->update_config_ = true;
+  // Setup the listener to publish so we can publish config state on connect.
+
+  // Publish initial values or configuration state
+  if (this->speed_sensor_ != nullptr)
+    this->speed_sensor_->publish_state(this->speed_);
+
+  if (this->velocity_sensor_ != nullptr)
+    this->velocity_sensor_->publish_state(this->velocity_);
+
+  #ifdef USE_NUMBER
+  if (this->min_speed_threshold_number_ != nullptr)
+      this->min_speed_threshold_number_->publish_state(this->min_speed_threshold_);
+  if (this->compensation_angle_number_ != nullptr)
+      this->compensation_angle_number_->publish_state(this->compensation_angle_);
+  if (this->sensitivity_number_ != nullptr)
+      this->sensitivity_number_->publish_state(this->sensitivity_);
+  if (this->vibration_correction_number_ != nullptr)
+      this->vibration_correction_number_->publish_state(this->vibration_correction_);
+  if (this->relay_trigger_duration_number_ != nullptr)
+      this->relay_trigger_duration_number_->publish_state(this->relay_trigger_duration_);
+  if (this->relay_trigger_speed_number_ != nullptr)
+      this->relay_trigger_speed_number_->publish_state(this->relay_trigger_speed_);
+  #endif
+
+  #ifdef USE_SELECT
+  if (this->tracking_mode_selector_ != nullptr)
+      this->tracking_mode_selector_->publish_state(this->i_to_s_(TRACKING_MODE_STR_TO_INT, this->tracking_mode_));
+  if (this->sample_rate_selector_ != nullptr)
+      this->sample_rate_selector_->publish_state(this->i_to_s_(SAMPLE_RATE_STR_TO_INT, this->sample_rate_));
+  #endif
+
 }
 
 void LD2415HComponent::dump_config() {
@@ -84,6 +115,7 @@ void LD2415HComponent::loop() {
     return;
   }
 }
+
 
 #ifdef USE_NUMBER
 void LD2415HComponent::set_min_speed_threshold(uint8_t speed) {
@@ -302,38 +334,62 @@ void LD2415HComponent::parse_config_param_(char *key, char *value) {
   switch (key[1]) {
     case '1':
       this->min_speed_threshold_ = v;
-      this->min_speed_threshold_number_->publish_state(this->min_speed_threshold_);
+      #ifdef USE_NUMBER
+      if (this->min_speed_threshold_number_ != nullptr)
+        this->min_speed_threshold_number_->publish_state(this->min_speed_threshold_);
+      #endif
       break;
     case '2':
       this->compensation_angle_ = std::stoi(value, nullptr, 16);
-      this->compensation_angle_number_->publish_state(this->compensation_angle_);
+      #ifdef USE_NUMBER
+      if (this->compensation_angle_number_ != nullptr)
+        this->compensation_angle_number_->publish_state(this->compensation_angle_);
+      #endif
       break;
     case '3':
       this->sensitivity_ = std::stoi(value, nullptr, 16);
-      this->sensitivity_number_->publish_state(this->sensitivity_);
+      #ifdef USE_NUMBER
+      if (this->sensitivity_number_ != nullptr)
+        this->sensitivity_number_->publish_state(this->sensitivity_);
+      #endif
       break;
     case '4':
       this->tracking_mode_ = this->i_to_tracking_mode_(v);
-      this->tracking_mode_selector_->publish_state(this->i_to_s_(TRACKING_MODE_STR_TO_INT, this->tracking_mode_));
+      #ifdef USE_SELECT
+      if (this->tracking_mode_selector_ != nullptr)
+        this->tracking_mode_selector_->publish_state(this->i_to_s_(TRACKING_MODE_STR_TO_INT, this->tracking_mode_));
+      #endif
       break;
     case '5':
       this->sample_rate_ = v;
-      this->sample_rate_selector_->publish_state(this->i_to_s_(SAMPLE_RATE_STR_TO_INT, this->sample_rate_));
+      #ifdef USE_SELECT
+      if (this->sample_rate_selector_ != nullptr)
+        this->sample_rate_selector_->publish_state(this->i_to_s_(SAMPLE_RATE_STR_TO_INT, this->sample_rate_));
+      #endif
       break;
     case '6':
       this->unit_of_measure_ = this->i_to_unit_of_measure_(v);
       break;
     case '7':
       this->vibration_correction_ = v;
-      this->vibration_correction_number_->publish_state(this->vibration_correction_);
+      #ifdef USE_NUMBER
+      if (this->vibration_correction_number_ != nullptr)
+        this->vibration_correction_number_->publish_state(this->vibration_correction_);
+      #endif
       break;
     case '8':
       this->relay_trigger_duration_ = v;
-      this->relay_trigger_duration_number_->publish_state(this->relay_trigger_duration_);
+      #ifdef USE_NUMBER
+      if (this->relay_trigger_duration_number_ != nullptr)
+        this->relay_trigger_duration_number_->publish_state(this->relay_trigger_duration_);
+      #endif
       break;
     case '9':
       this->relay_trigger_speed_ = v;
-      this->relay_trigger_speed_number_->publish_state(this->relay_trigger_speed_);
+      #ifdef USE_NUMBER
+      if (this->relay_trigger_speed_number_ != nullptr)
+        this->relay_trigger_speed_number_->publish_state(this->relay_trigger_speed_);
+      #endif
       break;
     case '0':
       this->negotiation_mode_ = this->i_to_negotiation_mode_(v);
