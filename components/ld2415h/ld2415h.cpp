@@ -12,7 +12,10 @@ void LD2415HComponent::setup() {
   // This triggers current sensor configurations to be dumped
   this->update_config_ = true;
   // Setup the listener to publish so we can publish config state on connect.
+#ifdef USE_API_SERVER
+  // Register for on_homeassistant_connected()
   api::global_api_server->add_homeassistant_listener(this);
+#endif
 }
 
 void LD2415HComponent::dump_config() {
