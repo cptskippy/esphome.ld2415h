@@ -3,9 +3,6 @@
 #include "esphome/core/component.h"
 #include "esphome/components/uart/uart.h"
 #include "esphome/components/sensor/sensor.h"
-#ifdef USE_API_SERVER
-  #include "esphome/components/api_server/homeassistant_listener.h"
-#endif
 #ifdef USE_NUMBER
 #include "esphome/components/number/number.h"
 #endif
@@ -47,9 +44,6 @@ class LD2415HListener {
 };
 
 class LD2415HComponent : public Component, public uart::UARTDevice
-#ifdef USE_API_SERVER
-                                 , public api::HomeassistantListener
-#endif
 {
  public:
   // Constructor declaration
@@ -57,9 +51,6 @@ class LD2415HComponent : public Component, public uart::UARTDevice
   void setup() override;
   void dump_config() override;
   void loop() override;
-#ifdef USE_API_SERVER
-  void on_homeassistant_connected() override;
-#endif
 
 #ifdef USE_NUMBER
   void set_min_speed_threshold_number(number::Number *number) { this->min_speed_threshold_number_ = number; };
