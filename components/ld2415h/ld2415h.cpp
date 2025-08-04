@@ -12,10 +12,36 @@ void LD2415HComponent::setup() {
   // This triggers current sensor configurations to be dumped
   this->update_config_ = true;
   // Setup the listener to publish so we can publish config state on connect.
-#ifdef USE_API_SERVER
-  // Register for on_homeassistant_connected()
-  api::global_api_server->add_homeassistant_listener(this);
-#endif
+
+  // Publish initial values or configuration state
+  if (this->speed_sensor_ != nullptr)
+    this->speed_sensor_->publish_state(this->speed_);
+
+  if (this->velocity_sensor_ != nullptr)
+    this->velocity_sensor_->publish_state(this->velocity_);
+
+  #ifdef USE_NUMBER
+  if (this->min_speed_threshold_number_ != nullptr)
+      this->min_speed_threshold_number_->publish_state(this->min_speed_threshold_);
+  if (this->compensation_angle_number_ != nullptr)
+      this->compensation_angle_number_->publish_state(this->compensation_angle_);
+  if (this->sensitivity_number_ != nullptr)
+      this->sensitivity_number_->publish_state(this->sensitivity_);
+  if (this->vibration_correction_number_ != nullptr)
+      this->vibration_correction_number_->publish_state(this->vibration_correction_);
+  if (this->relay_trigger_duration_number_ != nullptr)
+      this->relay_trigger_duration_number_->publish_state(this->relay_trigger_duration_);
+  if (this->relay_trigger_speed_number_ != nullptr)
+      this->relay_trigger_speed_number_->publish_state(this->relay_trigger_speed_);
+  #endif
+
+  #ifdef USE_SELECT
+  if (this->tracking_mode_selector_ != nullptr)
+      this->tracking_mode_selector_->publish_state(this->i_to_s_(TRACKING_MODE_STR_TO_INT, this->tracking_mode_));
+  if (this->sample_rate_selector_ != nullptr)
+      this->sample_rate_selector_->publish_state(this->i_to_s_(SAMPLE_RATE_STR_TO_INT, this->sample_rate_));
+  #endif
+
 }
 
 void LD2415HComponent::dump_config() {
@@ -88,40 +114,6 @@ void LD2415HComponent::loop() {
     this->update_config_ = false;
     return;
   }
-}
-
-void LD2415HComponent::on_homeassistant_connected() {
-  ESP_LOGI("ld2415h", "Connected to Home Assistant – pushing initial state");
-
-  // Publish initial values or configuration state
-  if (this->speed_sensor_ != nullptr)
-    this->speed_sensor_->publish_state(this->speed_);
-
-  if (this->velocity_sensor_ != nullptr)
-    this->velocity_sensor_->publish_state(this->velocity_);
-
-  #ifdef USE_NUMBER
-  if (this->min_speed_threshold_number_ != nullptr)
-      this->min_speed_threshold_number_->publish_state(this->min_speed_threshold_);
-  if (this->compensation_angle_number_ != nullptr)
-      this->compensation_angle_number_->publish_state(this->compensation_angle_);
-  if (this->sensitivity_number_ != nullptr)
-      this->sensitivity_number_->publish_state(this->sensitivity_);
-  if (this->vibration_correction_number_ != nullptr)
-      this->vibration_correction_number_->publish_state(this->vibration_correction_);
-  if (this->relay_trigger_duration_number_ != nullptr)
-      this->relay_trigger_duration_number_->publish_state(this->relay_trigger_duration_);
-  if (this->relay_trigger_speed_number_ != nullptr)
-      this->relay_trigger_speed_number_->publish_state(this->relay_trigger_speed_);
-  #endif
-
-  #ifdef USE_SELECT
-  if (this->tracking_mode_selector_ != nullptr)
-      this->tracking_mode_selector_->publish_state(this->i_to_s_(TRACKING_MODE_STR_TO_INT, this->tracking_mode_));
-  if (this->sample_rate_selector_ != nullptr)
-      this->sample_rate_selector_->publish_state(this->i_to_s_(SAMPLE_RATE_STR_TO_INT, this->sample_rate_));
-  #endif
-
 }
 
 
