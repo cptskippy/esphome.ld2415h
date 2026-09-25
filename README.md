@@ -26,7 +26,9 @@ The sensor has both RS-485 and TTL serial interfaces with a pair of RX and TX pi
 
 ## ESPHome Example Configuration
 
-Example yaml to use in esphome device config:
+Example yaml to use in esphome device config. The `ld2415h:` block is the
+component itself (it owns the UART wiring); the sensor, number, and select
+entries are the entities exposed from it.
 
 ```yaml
 external_components:
@@ -38,12 +40,16 @@ external_components:
     refresh: 0s
 
 uart:
-  tx_pin: 36
-  rx_pin: 34
+  tx_pin: 17
+  rx_pin: 16
   baud_rate: 9600
+
+ld2415h:
+  - id: ld2415h_radar
 
 sensor:
   - platform: ld2415h
+    ld2415h_id: ld2415h_radar
     speed: # This is the absolute speed of the object
       name: Speed
       filters:
@@ -54,7 +60,7 @@ sensor:
             timeout: 0.1s
             value: 0
         # Sensor will constantly report speed
-        # at the confgiured sample rate
+        # at the configured sample rate
         # this ensures we only report changes
         - delta: 0.1
     velocity: # This value is signed indicating approaching or retreating
@@ -64,4 +70,37 @@ sensor:
             timeout: 1s
             value: 0
         - delta: 0.1
+
+number:
+  - platform: ld2415h
+    ld2415h_id: ld2415h_radar
+    min_speed_threshold:
+      name: Minimum Speed Threshold
+    compensation_angle:
+      name: Compensation Angle
+    sensitivity:
+      name: Sensitivity
+    vibration_correction:
+      name: Vibration Correction
+    relay_trigger_duration:
+      name: Relay Trigger Duration
+    relay_trigger_speed:
+      name: Relay Trigger Speed
+
+select:
+  - platform: ld2415h
+    ld2415h_id: ld2415h_radar
+    sample_rate:
+      name: Sample Rate
+    tracking_mode:
+      name: Tracking Mode
 ```
+
+## Architecture
+
+The serial protocol engine (command framing, response parsing, config state)
+lives in the standalone [ld2415h](https://github.com/cptskippy/ld2415h)
+library, which has no ESPHome dependency and is unit-tested on the host. This
+component is a thin adapter: it wires the library's `Transport` interface to
+`uart::UARTDevice`, forwards its log output to the ESPHome logger, and
+exposes the parsed state as sensor/number/select entities.

@@ -9,7 +9,7 @@ static const char *const TAG = "LD2415H.compensation_angle_number";
 
 void CompensationAngleNumber::control(float angle) {
   this->publish_state(angle);
-  this->parent_->set_compensation_angle(angle);
+  this->parent_->set_compensation_angle(static_cast<uint8_t>(angle));
 }
 
 }  // namespace ld2415h

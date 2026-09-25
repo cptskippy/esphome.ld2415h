@@ -9,7 +9,7 @@ static const char *const TAG = "LD2415H.sample_rate_select";
 
 void SampleRateSelect::control(const std::string &value) {
   this->publish_state(value);
-  this->parent_->set_sample_rate(state);
+  this->parent_->set_sample_rate(value);
 }
 
 }  // namespace ld2415h

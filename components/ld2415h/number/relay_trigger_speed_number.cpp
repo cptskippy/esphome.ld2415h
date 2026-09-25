@@ -9,7 +9,7 @@ static const char *const TAG = "LD2415H.relay_trigger_speed_number";
 
 void RelayTriggerSpeedNumber::control(float speed) {
   this->publish_state(speed);
-  this->parent_->set_relay_trigger_speed(speed);
+  this->parent_->set_relay_trigger_speed(static_cast<uint8_t>(speed));
 }
 
 }  // namespace ld2415h
