@@ -26,18 +26,18 @@ void LD2415HComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "  Minimum Speed Threshold: %u KPH", cfg.minSpeedThreshold);
   ESP_LOGCONFIG(TAG, "  Compensation Angle: %u", cfg.compensationAngle);
   ESP_LOGCONFIG(TAG, "  Sensitivity: %u", cfg.sensitivity);
-  ESP_LOGCONFIG(TAG, "  Tracking Mode: %s", ::ld2415h::enumToString(::ld2415h::trackingModeStrings(), static_cast<uint8_t>(cfg.trackingMode)));
-  ESP_LOGCONFIG(TAG, "  Sampling Rate: %s", ::ld2415h::enumToString(::ld2415h::sampleRateStrings(), cfg.sampleRate));
-  ESP_LOGCONFIG(TAG, "  Unit of Measure: %s", ::ld2415h::enumToString(::ld2415h::unitOfMeasureStrings(), static_cast<uint8_t>(cfg.unitOfMeasure)));
+  ESP_LOGCONFIG(TAG, "  Tracking Mode: %s", ::hlk::ld2415h::enumToString(::hlk::ld2415h::trackingModeStrings(), static_cast<uint8_t>(cfg.trackingMode)));
+  ESP_LOGCONFIG(TAG, "  Sampling Rate: %s", ::hlk::ld2415h::enumToString(::hlk::ld2415h::sampleRateStrings(), cfg.sampleRate));
+  ESP_LOGCONFIG(TAG, "  Unit of Measure: %s", ::hlk::ld2415h::enumToString(::hlk::ld2415h::unitOfMeasureStrings(), static_cast<uint8_t>(cfg.unitOfMeasure)));
   ESP_LOGCONFIG(TAG, "  Vibration Correction: %u", cfg.vibrationCorrection);
   ESP_LOGCONFIG(TAG, "  Relay Trigger Duration: %u", cfg.relayTriggerDuration);
   ESP_LOGCONFIG(TAG, "  Relay Trigger Speed: %u KPH", cfg.relayTriggerSpeed);
-  ESP_LOGCONFIG(TAG, "  Negotiation Mode: %s", ::ld2415h::enumToString(::ld2415h::negotiationModeStrings(), static_cast<uint8_t>(cfg.negotiationMode)));
+  ESP_LOGCONFIG(TAG, "  Negotiation Mode: %s", ::hlk::ld2415h::enumToString(::hlk::ld2415h::negotiationModeStrings(), static_cast<uint8_t>(cfg.negotiationMode)));
 }
 
 void LD2415HComponent::loop() { this->radar_.update(); }
 
-// ::ld2415h::Transport
+// ::hlk::ld2415h::Transport
 
 int LD2415HComponent::available() { return this->uart::UARTDevice::available(); }
 
@@ -45,43 +45,43 @@ int LD2415HComponent::read() { return this->uart::UARTDevice::read(); }
 
 void LD2415HComponent::write(const uint8_t *data, uint8_t size) { this->write_array(data, size); }
 
-// ::ld2415h::Logger
+// ::hlk::ld2415h::Logger
 
-void LD2415HComponent::log(::ld2415h::LogLevel level, const char *, const char *message) {
+void LD2415HComponent::log(::hlk::ld2415h::LogLevel level, const char *, const char *message) {
   switch (level) {
-    case ::ld2415h::LogLevel::DEBUG:
+    case ::hlk::ld2415h::LogLevel::DEBUG:
       ESP_LOGD(TAG, "%s", message);
       break;
-    case ::ld2415h::LogLevel::INFO:
+    case ::hlk::ld2415h::LogLevel::INFO:
       ESP_LOGI(TAG, "%s", message);
       break;
-    case ::ld2415h::LogLevel::WARN:
+    case ::hlk::ld2415h::LogLevel::WARN:
       ESP_LOGW(TAG, "%s", message);
       break;
-    case ::ld2415h::LogLevel::ERROR:
+    case ::hlk::ld2415h::LogLevel::ERROR:
       ESP_LOGE(TAG, "%s", message);
       break;
   }
 }
 
-// ::ld2415h::Listener
+// ::hlk::ld2415h::Listener
 
 void LD2415HComponent::onConfig() { this->publish_config_state_(); }
 
 void LD2415HComponent::set_tracking_mode(const std::string &state) {
-  auto it = ::ld2415h::trackingModeStrings().find(state);
-  if (it == ::ld2415h::trackingModeStrings().end()) {
+  auto it = ::hlk::ld2415h::trackingModeStrings().find(state);
+  if (it == ::hlk::ld2415h::trackingModeStrings().end()) {
     ESP_LOGE(TAG, "Invalid tracking mode: %s", state.c_str());
     return;
   }
-  this->set_tracking_mode(static_cast<::ld2415h::TrackingMode>(it->second));
+  this->set_tracking_mode(static_cast<::hlk::ld2415h::TrackingMode>(it->second));
   if (this->tracking_mode_selector_ != nullptr)
     this->tracking_mode_selector_->publish_state(state);
 }
 
 void LD2415HComponent::set_sample_rate(const std::string &state) {
-  auto it = ::ld2415h::sampleRateStrings().find(state);
-  if (it == ::ld2415h::sampleRateStrings().end()) {
+  auto it = ::hlk::ld2415h::sampleRateStrings().find(state);
+  if (it == ::hlk::ld2415h::sampleRateStrings().end()) {
     ESP_LOGE(TAG, "Invalid sample rate: %s", state.c_str());
     return;
   }
@@ -113,10 +113,10 @@ void LD2415HComponent::publish_config_state_() {
   #ifdef USE_SELECT
   if (this->tracking_mode_selector_ != nullptr)
     this->tracking_mode_selector_->publish_state(
-        ::ld2415h::enumToString(::ld2415h::trackingModeStrings(), static_cast<uint8_t>(cfg.trackingMode)));
+        ::hlk::ld2415h::enumToString(::hlk::ld2415h::trackingModeStrings(), static_cast<uint8_t>(cfg.trackingMode)));
   if (this->sample_rate_selector_ != nullptr)
     this->sample_rate_selector_->publish_state(
-        ::ld2415h::enumToString(::ld2415h::sampleRateStrings(), cfg.sampleRate));
+        ::hlk::ld2415h::enumToString(::hlk::ld2415h::sampleRateStrings(), cfg.sampleRate));
   #endif
 }
 

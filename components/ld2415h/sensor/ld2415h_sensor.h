@@ -8,13 +8,13 @@ namespace ld2415h {
 
 // Sensor entity that forwards parsed speed/velocity from the radar
 // protocol engine to ESPHome sensor entities.
-class LD2415HSensor : public Component, public ::ld2415h::Listener {
+class LD2415HSensor : public Component, public ::hlk::ld2415h::Listener {
  public:
   void dump_config() override;
   void set_speed_sensor(sensor::Sensor *sensor) { this->speed_sensor_ = sensor; }
   void set_velocity_sensor(sensor::Sensor *velocity) { this->velocity_sensor_ = velocity; }
 
-  // ::ld2415h::Listener
+  // ::hlk::ld2415h::Listener
   void onSpeed(float speed) override;
   void onVelocity(float velocity) override;
 
