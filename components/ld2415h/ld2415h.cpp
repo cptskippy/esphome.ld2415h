@@ -13,6 +13,12 @@ LD2415HComponent::LD2415HComponent() {
 }
 
 void LD2415HComponent::setup() {
+  // Publish the current configuration state to the number/select
+  // entities so they are initialized immediately, mirroring the
+  // pre-refactor behavior. When the sensor's config read response
+  // arrives, onConfig() republishes with the sensor's real values.
+  this->publish_config_state_();
+
   // Request the current configuration from the sensor; it arrives as a
   // response line and triggers onConfig() to publish entity state.
   this->radar_.requestConfig();

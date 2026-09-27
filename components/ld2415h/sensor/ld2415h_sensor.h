@@ -10,6 +10,7 @@ namespace ld2415h {
 // protocol engine to ESPHome sensor entities.
 class LD2415HSensor : public Component, public ::hlk::ld2415h::Listener {
  public:
+  void setup() override;
   void dump_config() override;
   void set_speed_sensor(sensor::Sensor *sensor) { this->speed_sensor_ = sensor; }
   void set_velocity_sensor(sensor::Sensor *velocity) { this->velocity_sensor_ = velocity; }
