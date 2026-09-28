@@ -8,8 +8,7 @@ namespace ld2415h {
 static const char *const TAG = "LD2415H.sensor";
 
 void LD2415HSensor::setup() {
-  // Publish initial values so the entities are initialized immediately
-  // rather than showing as uninitialized until the first speed line.
+  // Initialize the sensor entities with a zero value.
   if (this->speed_sensor_ != nullptr)
     this->speed_sensor_->publish_state(0.0f);
   if (this->velocity_sensor_ != nullptr)

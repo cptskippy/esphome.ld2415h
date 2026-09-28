@@ -40,8 +40,8 @@ external_components:
     refresh: 0s
 
 uart:
-  tx_pin: 17
-  rx_pin: 16
+  tx_pin: 36
+  rx_pin: 34
   baud_rate: 9600
 
 ld2415h:
