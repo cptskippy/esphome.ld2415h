@@ -9,7 +9,7 @@ static const char *const TAG = "LD2415H.min_speed_threshold_number";
 
 void MinSpeedThresholdNumber::control(float speed) {
   this->publish_state(speed);
-  this->parent_->set_min_speed_threshold(speed);
+  this->parent_->set_min_speed_threshold(static_cast<uint8_t>(speed));
 }
 
 }  // namespace ld2415h

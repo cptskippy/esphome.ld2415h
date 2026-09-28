@@ -9,7 +9,7 @@ static const char *const TAG = "LD2415H.vibration_correction_number";
 
 void VibrationCorrectionNumber::control(float correction) {
   this->publish_state(correction);
-  this->parent_->set_vibration_correction(correction);
+  this->parent_->set_vibration_correction(static_cast<uint8_t>(correction));
 }
 
 }  // namespace ld2415h

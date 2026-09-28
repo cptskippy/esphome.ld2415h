@@ -9,7 +9,7 @@ static const char *const TAG = "LD2415H.sensitivity_number";
 
 void SensitivityNumber::control(float sensitivity) {
   this->publish_state(sensitivity);
-  this->parent_->set_sensitivity(sensitivity);
+  this->parent_->set_sensitivity(static_cast<uint8_t>(sensitivity));
 }
 
 }  // namespace ld2415h

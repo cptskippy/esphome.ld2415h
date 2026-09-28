@@ -12,7 +12,7 @@ from .. import ld2415h_ns, LD2415HComponent, CONF_LD2415H_ID
 
 CONF_VELOCITY = "velocity"
 
-LD2415HSensor = ld2415h_ns.class_("LD2415HSensor", sensor.Sensor, cg.Component)
+LD2415HSensor = ld2415h_ns.class_("LD2415HSensor", cg.Component)
 
 ICON_SPEEDOMETER = "mdi:speedometer"
 

@@ -24,12 +24,12 @@ TrackingModeSelect = ld2415h_ns.class_("TrackingModeSelect", select.Select)
 
 CONFIG_SCHEMA = {
     cv.GenerateID(CONF_LD2415H_ID): cv.use_id(LD2415HComponent),
-    cv.Optional(CONF_SAMPLE_RATE, default=1): select.select_schema(
+    cv.Optional(CONF_SAMPLE_RATE): select.select_schema(
         SampleRateSelect,
         entity_category=ENTITY_CATEGORY_CONFIG,
         icon=ICON_CLOCK_FAST,
     ),
-    cv.Optional(CONF_TRACKING_MODE, default=0): select.select_schema(
+    cv.Optional(CONF_TRACKING_MODE): select.select_schema(
         TrackingModeSelect,
         entity_category=ENTITY_CATEGORY_CONFIG,
         icon=ICON_RADAR,
@@ -42,14 +42,14 @@ async def to_code(config):
     if sample_rate_config := config.get(CONF_SAMPLE_RATE):
         sel = await select.new_select(
             sample_rate_config,
-            options=[CONF_SAMPLE_RATE_SELECTS],
+            options=CONF_SAMPLE_RATE_SELECTS,
         )
         await cg.register_parented(sel, config[CONF_LD2415H_ID])
         cg.add(ld2415h_component.set_sample_rate_select(sel))
     if tracking_mode_config := config.get(CONF_TRACKING_MODE):
         sel = await select.new_select(
             tracking_mode_config,
-            options=[CONF_TRACKING_MODE_SELECTS],
+            options=CONF_TRACKING_MODE_SELECTS,
         )
         await cg.register_parented(sel, config[CONF_LD2415H_ID])
         cg.add(ld2415h_component.set_tracking_mode_select(sel))

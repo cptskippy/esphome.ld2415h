@@ -9,7 +9,7 @@ static const char *const TAG = "LD2415H.relay_trigger_duration_number";
 
 void RelayTriggerDurationNumber::control(float duration) {
   this->publish_state(duration);
-  this->parent_->set_relay_trigger_duration(duration);
+  this->parent_->set_relay_trigger_duration(static_cast<uint8_t>(duration));
 }
 
 }  // namespace ld2415h
