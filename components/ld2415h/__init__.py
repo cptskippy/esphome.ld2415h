@@ -14,7 +14,7 @@ MULTI_CONF = True
 # Pulled from git for now; once the library is published to the
 # PlatformIO registry this becomes:
 #   cg.add_library("cptskippy/LD2415H", "<version>")
-cg.add_library("LD2415H", None, "https://github.com/cptskippy/ld2415h.git#9a245e10f47356ca90f449cee46af32f8af3dad5")
+cg.add_library("LD2415H", None, "https://github.com/cptskippy/ld2415h.git#v0.3.0")
 
 ld2415h_ns = cg.esphome_ns.namespace("ld2415h")
 LD2415HComponent = ld2415h_ns.class_("LD2415HComponent", cg.Component, uart.UARTDevice)
