@@ -1,6 +1,7 @@
 #pragma once
 
 #include "esphome/core/component.h"
+#include "esphome/core/preferences.h"
 #include "esphome/components/uart/uart.h"
 
 #include "LD2415H.h"
@@ -11,9 +12,24 @@
 #ifdef USE_SELECT
 #include "esphome/components/select/select.h"
 #endif
+#ifdef USE_BUTTON
+#include "esphome/components/button/button.h"
+#endif
 
 namespace esphome {
 namespace ld2415h {
+
+// Persisted configuration record. Written to flash (NVS) when the user
+// changes a setting; read back on setup.
+//
+// valid=false means "saved, then cleared by reset" and is distinct from
+// a first boot (no record in flash at all), which uses the built-in
+// defaults.
+struct PersistentConfig {
+  uint8_t version{1};
+  bool valid{false};
+  ::hlk::ld2415h::Configuration config;
+};
 
 // Thin ESPHome wrapper around the transport-agnostic ld2415h::LD2415H
 // protocol engine (ld2415h library).
@@ -49,17 +65,50 @@ class LD2415HComponent : public Component,
   // Forward listener registration for entities (sensors).
   void register_listener(::hlk::ld2415h::Listener *listener) { this->radar_.registerListener(listener); }
 
-  // Setters used by the number/select entities.
-  void set_min_speed_threshold(uint8_t value) { this->radar_.setMinSpeedThreshold(value); }
-  void set_compensation_angle(uint8_t value) { this->radar_.setCompensationAngle(value); }
-  void set_sensitivity(uint8_t value) { this->radar_.setSensitivity(value); }
-  void set_vibration_correction(uint8_t value) { this->radar_.setVibrationCorrection(value); }
-  void set_relay_trigger_duration(uint8_t value) { this->radar_.setRelayTriggerDuration(value); }
-  void set_relay_trigger_speed(uint8_t value) { this->radar_.setRelayTriggerSpeed(value); }
-  void set_tracking_mode(::hlk::ld2415h::TrackingMode mode) { this->radar_.setTrackingMode(mode); }
+  // Setters used by the number/select entities. Each change is staged
+  // for the radar and saved to flash.
+  void set_min_speed_threshold(uint8_t value) {
+    this->radar_.setMinSpeedThreshold(value);
+    this->save_config_();
+  }
+  void set_compensation_angle(uint8_t value) {
+    this->radar_.setCompensationAngle(value);
+    this->save_config_();
+  }
+  void set_sensitivity(uint8_t value) {
+    this->radar_.setSensitivity(value);
+    this->save_config_();
+  }
+  void set_vibration_correction(uint8_t value) {
+    this->radar_.setVibrationCorrection(value);
+    this->save_config_();
+  }
+  void set_relay_trigger_duration(uint8_t value) {
+    this->radar_.setRelayTriggerDuration(value);
+    this->save_config_();
+  }
+  void set_relay_trigger_speed(uint8_t value) {
+    this->radar_.setRelayTriggerSpeed(value);
+    this->save_config_();
+  }
+  void set_tracking_mode(::hlk::ld2415h::TrackingMode mode) {
+    this->radar_.setTrackingMode(mode);
+    this->save_config_();
+  }
   void set_tracking_mode(const std::string &state);
-  void set_sample_rate(uint8_t rate) { this->radar_.setSampleRate(rate); }
+  void set_sample_rate(uint8_t rate) {
+    this->radar_.setSampleRate(rate);
+    this->save_config_();
+  }
   void set_sample_rate(const std::string &state);
+
+  // Restore the built-in default configuration, clear the saved
+  // configuration in flash, and push the defaults to the radar.
+  void reset_defaults();
+
+  // NVS key for this component instance (set from codegen; includes the
+  // component id so multiple instances do not collide).
+  void set_config_pref_key(uint32_t key) { this->config_pref_key_ = key; }
 
 #ifdef USE_NUMBER
   void set_min_speed_threshold_number(number::Number *number) { this->min_speed_threshold_number_ = number; }
@@ -73,11 +122,18 @@ class LD2415HComponent : public Component,
   void set_sample_rate_select(select::Select *selector) { this->sample_rate_selector_ = selector; }
   void set_tracking_mode_select(select::Select *selector) { this->tracking_mode_selector_ = selector; }
 #endif
+#ifdef USE_BUTTON
+  SUB_BUTTON(reset_defaults)
+#endif
 
  protected:
   void publish_config_state_();
+  void save_config_();
 
   ::hlk::ld2415h::LD2415H radar_{this, this};
+  ESPPreferenceObject config_pref_{};
+  uint32_t config_pref_key_{0};
+  bool config_pref_ready_{false};
 
 #ifdef USE_NUMBER
   number::Number *min_speed_threshold_number_{nullptr};

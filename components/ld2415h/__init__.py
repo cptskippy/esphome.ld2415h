@@ -2,6 +2,7 @@ import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import uart
 from esphome.const import CONF_ID
+from esphome.helpers import fnv1_hash_object_id
 
 CODEOWNERS = ["@cptskippy"]
 
@@ -13,7 +14,7 @@ MULTI_CONF = True
 # Pulled from git for now; once the library is published to the
 # PlatformIO registry this becomes:
 #   cg.add_library("cptskippy/LD2415H", "<version>")
-cg.add_library("LD2415H", None, "https://github.com/cptskippy/ld2415h.git")
+cg.add_library("LD2415H", None, "https://github.com/cptskippy/ld2415h.git#v0.3.0")
 
 ld2415h_ns = cg.esphome_ns.namespace("ld2415h")
 LD2415HComponent = ld2415h_ns.class_("LD2415HComponent", cg.Component, uart.UARTDevice)
@@ -43,3 +44,6 @@ async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
     await uart.register_uart_device(var, config)
+    # NVS key derived from the component id so multiple instances do
+    # not collide on the same flash entry.
+    cg.add(var.set_config_pref_key(fnv1_hash_object_id(config[CONF_ID].id)))
