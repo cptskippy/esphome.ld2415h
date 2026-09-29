@@ -1,7 +1,7 @@
 import esphome.codegen as cg
 from esphome.components import button
 import esphome.config_validation as cv
-from esphome.const import CONF_ID, ENTITY_CATEGORY_CONFIG
+from esphome.const import CONF_ID, ENTITY_CATEGORY_DIAGNOSTIC
 
 from .. import CONF_LD2415H_ID, LD2415HComponent, ld2415h_ns
 
@@ -14,7 +14,7 @@ CONFIG_SCHEMA = {
     cv.GenerateID(CONF_LD2415H_ID): cv.use_id(LD2415HComponent),
     cv.Optional(CONF_RESET_DEFAULTS): button.button_schema(
         ResetDefaultsButton,
-        entity_category=ENTITY_CATEGORY_CONFIG,
+        entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         icon="mdi:restore",
     ),
 }
