@@ -13,6 +13,21 @@ LD2415HComponent::LD2415HComponent() {
 }
 
 void LD2415HComponent::setup() {
+  this->config_pref_ =
+      global_preferences->make_preference<PersistentConfig>(this->config_pref_key_);
+  this->config_pref_ready_ = true;
+
+  // Load the saved configuration. A missing record means first boot;
+  // a record with valid=false means the user cleared it via reset.
+  // Both use the built-in defaults, and neither writes flash.
+  PersistentConfig stored;
+  if (this->config_pref_.load(&stored) && stored.valid && stored.version == 1) {
+    this->radar_.mutableConfiguration() = stored.config;
+    ESP_LOGI(TAG, "Loaded saved configuration");
+  } else {
+    ESP_LOGI(TAG, "No saved configuration; using defaults");
+  }
+
   // Publish the current configuration state to the number/select
   // entities; when the sensor's config read response arrives,
   // onConfig() republishes with the sensor's values.
@@ -123,6 +138,36 @@ void LD2415HComponent::publish_config_state_() {
     this->sample_rate_selector_->publish_state(
         ::hlk::ld2415h::enumToString(::hlk::ld2415h::sampleRateStrings(), cfg.sampleRate));
   #endif
+}
+
+// Configuration persistence
+
+void LD2415HComponent::save_config_() {
+  if (!this->config_pref_ready_)
+    return;
+
+  PersistentConfig stored;
+  stored.version = 1;
+  stored.valid = true;
+  stored.config = this->radar_.getConfiguration();
+  if (!this->config_pref_.save(&stored))
+    ESP_LOGW(TAG, "Failed to save configuration");
+}
+
+void LD2415HComponent::reset_defaults() {
+  ESP_LOGI(TAG, "Resetting to default configuration");
+  this->radar_.resetConfiguration();
+  this->publish_config_state_();
+
+  // Mark the saved record as cleared. The record (rather than an
+  // erase) keeps first boot distinguishable from an explicit reset.
+  if (this->config_pref_ready_) {
+    PersistentConfig cleared;
+    cleared.version = 1;
+    cleared.valid = false;
+    if (!this->config_pref_.save(&cleared))
+      ESP_LOGW(TAG, "Failed to clear saved configuration");
+  }
 }
 
 }  // namespace ld2415h
